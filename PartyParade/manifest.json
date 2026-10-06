@@ -1,0 +1,33 @@
+{
+  "id": "wildfollowers",
+  "name": "Party Parade",
+  "version": "3.0.0",
+  "api": 2,
+  "entry": "main.lua",
+  "profile": "content",
+  "category": "MECHANIC",
+  "game_version": ">=0.3.54 <0.4.0",
+  "games": [
+    "firered",
+    "leafgreen",
+    "emerald"
+  ],
+  "priority": 350,
+  "dependencies": [
+    "untamed_advanced@>=1.0.0-beta.7 <2.0.0"
+  ],
+  "dependency_sources": {
+    "untamed_advanced": "goldenroddeptstore/Untamed-Advanced"
+  },
+  "optional_dependencies": [
+    "1025dex",
+    "kanto_hoenn"
+  ],
+  "conflicts": [],
+  "permissions": [
+    "engine_internals"
+  ],
+  "affects_link": true,
+  "github": "Bentley734/WildFollowers",
+  "description": "Follower add-on for Untamed Advanced: up to six party Pokemon, spacing, sprite choices, idle and group behaviors, safe arrivals and shared follower settings."
+}
