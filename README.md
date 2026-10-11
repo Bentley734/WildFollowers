@@ -430,3 +430,7 @@ Separate FOLLOWERS MARCH SPEED and WILDS MARCH SPEED choices offer 50%–300%, def
 
 ## 3.3.8
 Both march speed settings now include 10%, 20%, 25%, and 33% for slower animation.
+
+
+## 3.3.9
+March speed applies while stationary. Walking always uses normal walking animation.

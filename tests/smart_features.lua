@@ -112,6 +112,16 @@ for gen=1,3 do
     check(x==100 and y==200 and not a.moving,'march speed cannot move actor')
    end
   end
+  for _,speed in ipairs({.1,.2,.25,.33,.5,.75,1,1.25,1.5,2,3})do
+   values[key]=true;values[key..'_speed']=speed;a.moving=true;a.spacingPaused=nil;a.progress=.5;a.clock=.13
+   S:draw(a,0,0,1);local expected=follower and 1 or 3
+   check(drawn==expected,'walking uses normal animation regardless of march speed')
+   local sprite=V:pose(a)
+   check(sprite.def._wildFollowers.frame==expected,'native walking also ignores march speed')
+   a.spacingPaused=true
+   check(S:frame(a)==math.floor(a.clock*8*speed)%4,'stationary paused step uses chosen march speed')
+  end
+  a.spacingPaused=nil
   values[key]=false;a.moving=true;a.clock=.13;a.progress=.5
   check(S:frame(a)==(follower and 1 or 3),'march OFF preserves native walking animation')
  end
