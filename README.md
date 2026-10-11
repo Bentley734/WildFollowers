@@ -422,3 +422,7 @@ Followers keep one return destination and finish obstacle detours without circli
 
 ## 3.3.6
 Smoother smart catch-up, safe partial movement at sprite boundaries, leaders advancing first, and resumable full-party detours prevent the tail from repeatedly losing ground. Restart after updating.
+
+
+## 3.3.7
+Separate FOLLOWERS MARCH SPEED and WILDS MARCH SPEED choices offer 50%–300%, defaulting to 100%. Restart after updating.

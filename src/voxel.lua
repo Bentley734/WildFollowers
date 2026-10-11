@@ -16,11 +16,7 @@ return function(mod,include)
     end
     local pose=actor.idlePose
     local facing=pose and pose.facing or actor.facing or 'down'
-    local march=mod.options:get(actor.follower and 'followers_march' or 'wilds_march')==true
-    local frame=((actor.moving and not actor.spacingPaused) or march) and math.floor((actor.clock or 0)*8)%4 or (pose and pose.frame or 0)
-    if not actor.follower and actor.moving and not actor.spacingPaused and actor.progress~=nil then
-      frame=(1+math.floor(math.max(0,math.min(1,actor.progress))*4))%4
-    end
+    local frame=S:frame(actor)
     local size=r.ee and 1 or 32/r.w
     local water=actor.surface=='water' and not actor.follower
     local crop=water and math.max(0,math.min(3,math.floor(tonumber(mod.options:get('water_sprite_crop')) or 0))) or 0

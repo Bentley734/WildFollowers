@@ -95,5 +95,26 @@ for gen=1,3 do
    end
   end
  end
+ -- Independent speed multipliers must match in 2D and native/3D poses.
+ for _,follower in ipairs({true,false})do
+  local key=follower and 'followers_march' or 'wilds_march'
+  local other=follower and 'wilds_march' or 'followers_march'
+  values[key]=true;values[other]=true;values[other..'_speed']=3
+  local a={national=1,follower=follower,px=100,py=200,clock=0,facing='down'}
+  for _,speed in ipairs({.5,.75,1,1.25,1.5,2,3})do
+   values[key..'_speed']=speed
+   for sample=0,15 do
+    a.clock=sample*.07
+    local expected=math.floor(a.clock*8*speed)%4
+    S:draw(a,0,0,1);check(drawn==expected,'chosen march speed drives 2D animation independently')
+    local sprite,x,y=V:pose(a)
+    check(sprite.def._wildFollowers.frame==expected,'native/3D march speed matches 2D')
+    check(x==100 and y==200 and not a.moving,'march speed cannot move actor')
+   end
+  end
+  values[key]=false;a.moving=true;a.clock=.13;a.progress=.5
+  check(S:frame(a)==(follower and 1 or 3),'march OFF preserves native walking animation')
+ end
+
 end
 print('PASS '..checks..' smart alpha bounds, pairwise spacing, manual minimum, march toggles and 2D/native pose checks')

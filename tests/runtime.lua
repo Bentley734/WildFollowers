@@ -221,6 +221,17 @@ for _,spec in ipairs({{'smart_spacing','SMART SPACING'},{'wilds_march','WILDS MA
  eq(values[spec[1]],false,'new option restores OFF')
 end
 
+for _,key in ipairs({'followers_march_speed','wilds_march_speed'})do
+ local row
+ for _,r in ipairs(settings)do if r.id=='wildfollowers.'..key then row=r end end
+ check(row~=nil,'march speed is available in native options')
+ eq(row.value(),'100%','march speed defaults to existing animation rate')
+ check(row.step({game=game},1),'march speed persists through menu')
+ eq(values[key],1.25,'march speed changes independently')
+ check(row.step({game=game},-1),'march speed restores default')
+ eq(values[key],1,'march speed returns to normal')
+end
+
 local speedRow,runRow
 for _,row in ipairs(settings)do
  if row.id=='wildfollowers.OW_FOLLOWERS_CATCH_UP_SPEED' then speedRow=row end
@@ -234,8 +245,8 @@ eq(speedRow.value(),'3X','native page reads updated choice label')
 check(runRow.step(context,1),'main toggle changes live mod setting')
 eq(values.OW_FOLLOWERS_RUN_TO_CATCH_UP,false,'main toggle shares mod manager value')
 eq(runRow.value(),'OFF','native page reads updated toggle label')
-eq(written,8,'main setting changes persist through engine writer')
-eq(emitted,8,'main setting changes emit normal mod option events')
+eq(written,12,'main setting changes persist through engine writer')
+eq(emitted,12,'main setting changes emit normal mod option events')
 speedRow.step(context,-1);runRow.step(context,1)
 game.writeOptions=originalWrite
 -- Real Mods manager writes the save-options bucket before the engine writer.

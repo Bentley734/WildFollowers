@@ -95,6 +95,18 @@ return function(mod,include)
     x=(x or actor.px)+8;y=(y or actor.py)+footY
     return {x-b.left*sx,y-b.top*sy,x+b.right*sx,y+b.bottom*sy}
   end
+  function S:frame(actor)
+    local march=mod.options:get(actor.follower and 'followers_march' or 'wilds_march')==true
+    local speed=march and math.max(.5,math.min(3,tonumber(mod.options:get(actor.follower and 'followers_march_speed' or 'wilds_march_speed')) or 1)) or 1
+    local pose=actor.idlePose
+    local frame=((actor.moving and not actor.spacingPaused) or march) and math.floor((actor.clock or 0)*8*speed)%4 or (pose and pose.frame or 0)
+    -- Moving wilds keep their complete step cycle; march speed controls their
+    -- standing animation without changing walking speed or movement progress.
+    if not actor.follower and actor.moving and not actor.spacingPaused and actor.progress~=nil then
+      frame=(1+math.floor(math.max(0,math.min(1,actor.progress))*4))%4
+    end
+    return frame
+  end
   function S:draw(actor,ox,oy,scale,oamRow)
     local r=self:get(actor.national,actor);if not r or actor.hidden then return end
     local G=love.graphics;scale=scale or 1
@@ -102,13 +114,7 @@ return function(mod,include)
     local size=r.ee and 1 or 32/r.w
     local pose=actor.idlePose
     local facing=pose and pose.facing or actor.facing or 'down'
-    local march=mod.options:get(actor.follower and 'followers_march' or 'wilds_march')==true
-    local frame=((actor.moving and not actor.spacingPaused) or march) and math.floor((actor.clock or 0)*8)%4 or (pose and pose.frame or 0)
-    if not actor.follower and actor.moving and not actor.spacingPaused and actor.progress~=nil then
-      -- A short wild step must still visit all walk poses, independent of the
-      -- global idle clock. Standing frame zero returns naturally on landing.
-      frame=(1+math.floor(math.max(0,math.min(1,actor.progress))*4))%4
-    end
+    local frame=self:frame(actor)
     local x=ox+(actor.px+8)*scale-r.w*size*scale/2
     local jumpY=J:pose(actor)
     local y=oy+(actor.py+footY+jumpY)*scale-r.h*size*scale
