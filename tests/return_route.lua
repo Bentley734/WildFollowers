@@ -19,3 +19,13 @@ end
 assert(count==8,'shortest detour around wall')
 print('PASS return detour completes without reversing or circling ('..count..' steps)')
 
+
+e={cellX=0,cellY=0,follower=true};c.followers={e,{},{},{},{},{}}
+local calls=0
+while e.cellX~=goal.x or e.cellY~=goal.y do
+ c.routeBudget=64;c.routeAllowances={};local step,g=M:route(c,e,{goal});calls=calls+1
+ if step then e.cellX=step.x;e.cellY=step.y else assert(e.returnSearch,'budget-limited detour retains search')end
+ assert(calls<40,'six-follower detour search eventually completes')
+end
+assert(calls>8,'detour fixture exercises search budget continuation')
+print('PASS six-follower bounded return search resumes across frames')

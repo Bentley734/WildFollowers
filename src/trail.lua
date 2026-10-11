@@ -87,7 +87,7 @@ return function(mod)
   function T:eligible(slot,p)
     local gap=self:gap(slot)
     local position=self.index
-    if p and p.moving and math.abs(gap-math.floor(gap+.000001))>.000001 then
+    if p and p.moving and (math.abs(gap-math.floor(gap+.000001))>.000001 or mod and mod.options:get('smart_spacing')==true) then
       local from,to=self.points[self.index-1],self.points[self.index]
       if from and to then
         local span=math.abs(to.x-from.x)+math.abs(to.y-from.y)
@@ -115,8 +115,12 @@ return function(mod)
       if point.x==actor.cellX and point.y==actor.cellY then actor.trailStep=point.n
       else
         local duration=point.duration or 16/60
-        if eligible-point.n>=1 and not point.jump
-            and (not mod or mod.options:get('OW_FOLLOWERS_RUN_TO_CATCH_UP')~=false) then duration=duration/math.max(1,math.min(6,tonumber(mod and mod.options:get('OW_FOLLOWERS_CATCH_UP_SPEED')) or 2)) end
+        if (eligible-point.n>=1 or mod and mod.options:get('smart_spacing')==true and eligible-actor.trailStep>.000001) and not point.jump
+            and (not mod or mod.options:get('OW_FOLLOWERS_RUN_TO_CATCH_UP')~=false) then
+          local speed=math.max(1,math.min(6,tonumber(mod and mod.options:get('OW_FOLLOWERS_CATCH_UP_SPEED')) or 2))
+          if mod and mod.options:get('smart_spacing')==true then speed=math.min(speed,1+math.max(0,eligible-actor.trailStep)) end
+          duration=duration/speed
+        end
         return point,nil,duration
       end
     end

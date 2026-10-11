@@ -355,7 +355,7 @@ return function(mod,include)
     local limit=1
     if e.follower and e.targetStep and not e.jumpActive and not e.yielding then
       local gap=T:gap(e.lineSlot or e.slot)
-      if math.abs(gap-math.floor(gap+.000001))>.000001 then
+      if math.abs(gap-math.floor(gap+.000001))>.000001 or option('smart_spacing')==true then
         limit=math.max(e.progress,math.min(1,T:eligible(e.lineSlot or e.slot,A:player())-e.targetStep+1))
       end
     end
@@ -375,29 +375,49 @@ return function(mod,include)
       local p=A:player();local foot=A.generation==3 and 16 or 12
       local trainerBox={(p.px or p.cellX*16),(p.py or p.cellY*16)+foot-16,
         (p.px or p.cellX*16)+16,(p.py or p.cellY*16)+foot}
-      local blocked=overlap(newBox,trainerBox)>overlap(oldBox,trainerBox)+.000001
+      local obstacles={trainerBox}
       for _,other in ipairs(self.followers)do
-        -- A leader must never wait for a follower behind it: that follower
-        -- already depends on the leader's trail progress, creating a deadlock.
+        -- A leader never waits for a follower behind it.
         local rank=e.lineSlot or e.slot or 1
         local otherRank=other.lineSlot or other.slot or 1
         if other~=e and otherRank<rank and not other.hidden and not other.ballPhase then
-          local box=S:box(other)
-          if overlap(newBox,box)>overlap(oldBox,box)+.000001 then blocked=true;break end
+          obstacles[#obstacles+1]=S:box(other)
         end
       end
-      if blocked then e.progress=previous;e.px,e.py=oldX,oldY;e.spacingPaused=true end
+      local function blocked(box)
+        for _,obstacle in ipairs(obstacles)do
+          if overlap(box,obstacle)>overlap(oldBox,obstacle)+.000001 then return true end
+        end
+        return false
+      end
+      if blocked(newBox) then
+        -- Use the safe part of this frame's movement instead of throwing it
+        -- all away whenever a large sprite reaches the companion ahead.
+        local low,high=previous,e.progress
+        for _=1,12 do
+          local middle=(low+high)/2
+          local x=e.startX+(e.targetX*16-e.startX)*middle
+          local y=e.startY+(e.targetY*16-e.startY)*middle
+          local dx,dy=x-oldX,y-oldY
+          local box={oldBox[1]+dx,oldBox[2]+dy,oldBox[3]+dx,oldBox[4]+dy}
+          if blocked(box)then high=middle else low=middle end
+        end
+        e.progress=low
+        e.px=e.startX+(e.targetX*16-e.startX)*low
+        e.py=e.startY+(e.targetY*16-e.startY)*low
+        e.spacingPaused=low-previous<.000001 or nil
+      end
     end
     if e.progress==1 then
       e.cellX,e.cellY=e.targetX,e.targetY;e.targetX=nil;e.targetY=nil;e.moving=false;e.rejoining=nil;e.jumpActive=nil;e.spacingPaused=nil
       if e.follower then A:land(e) else W:land(e);W:sync(e) end
       if e.targetStep then e.trailStep=e.targetStep;e.targetStep=nil end
       if e.rejoinGoal then local goal=e.rejoinGoal;e.rejoinGoal=nil;Y:join(self,e,goal) end
-      -- A fractional offset can cross a cell between native frames. Carry
+      -- Movement can cross a cell between native frames. Carry
       -- the unused frame time into the next step instead of losing pixels.
       local remaining=dt-(1-previous)*(e.duration or 1/6)
       local gap=e.follower and T:gap(e.lineSlot or e.slot)
-      if remaining>.000001 and gap and math.abs(gap-math.floor(gap+.000001))>.000001
+      if remaining>.000001 and gap
           and not e.yielding and not e.arrivalAnchor and not e.idleMode then
         local point,lost,duration=T:next(e,e.lineSlot or e.slot,A:player())
         if point and self:move(e,point.x,point.y,duration,point) then
@@ -538,7 +558,11 @@ return function(mod,include)
     T:updateSpacing(self.followers,S,p)
     B:seedTrail(self,T)
     if p.moving then Y:prepare(self) end
-    for i,e in ipairs(self.followers) do
+    -- Advance leaders first even after a return changes procession order.
+    local procession={};for i,e in ipairs(self.followers)do procession[#procession+1]={i=i,e=e}end
+    table.sort(procession,function(a,b)return (a.e.lineSlot or a.i)<(b.e.lineSlot or b.i)end)
+    for _,entry in ipairs(procession) do
+      local i,e=entry.i,entry.e
       if e.awaitingTile then e.awaitingTile=nil;B:place(self,e) end
       if e.ballPhase=='release' and p.moving then e.ballPhase=nil end
       if e.ballPhase=='release' then

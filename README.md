@@ -418,3 +418,7 @@ Restart the game to reload the updated movement code.
 
 ## 3.3.5
 Followers keep one return destination and finish obstacle detours without circling back. Restart the game after updating.
+
+
+## 3.3.6
+Smoother smart catch-up, safe partial movement at sprite boundaries, leaders advancing first, and resumable full-party detours prevent the tail from repeatedly losing ground. Restart after updating.

@@ -74,6 +74,12 @@ for gen=1,3 do
  C:animate(e,.1);C:animate(e,.1)
  check(e.cellX==1 and not e.moving,'leader completes turn without waiting for tail')
 
+ -- A coarse update that crosses the safe boundary must retain its safe pixels.
+ e.lineSlot=2;front.lineSlot=1;front.px=26;front.py=0
+ e.startX=0;e.startY=0;e.px=0;e.py=0;e.progress=0;e.targetX=1;e.targetY=0;e.moving=true
+ C.followers={e,front};C:animate(e,.15)
+ check(e.px>9.99 and e.px<=10.001,'partial overlap frame advances up to safe edge instead of losing all movement')
+
  for _,follower in ipairs({true,false})do
   local key=follower and 'followers_march' or 'wilds_march'
   local a={national=1,follower=follower,px=100,py=200,clock=0,facing='down'}
