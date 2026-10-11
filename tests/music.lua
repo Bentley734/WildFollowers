@@ -3,7 +3,7 @@ local checks=0
 local function check(v,m)checks=checks+1;assert(v,m)end
 local function read(n)local f=assert(io.open(root..'/src/'..n..'.lua'));local s=f:read('*a');f:close();return s end
 local stamp=1000;local signal
-local values={OW_FOLLOWERS_IDLE_MODE='music',OW_FOLLOWERS_IDLE_TIME=0,music_sensitivity=1}
+local values={OW_FOLLOWERS_IDLE_MODE='music',OW_FOLLOWERS_IDLE_TIME=0,music_sensitivity=1,music_speed=1}
 local mod={read=function()return signal end,options={get=function(_,key)return values[key]end}}
 local env=setmetatable({os={time=function()return stamp end}},{__index=_G})
 local Music=assert(load(read('music'),'music','t',env))()(mod)
@@ -39,4 +39,39 @@ local pose=Music:pose(0,'down');check(pose.frame==0 and pose.hop==0 and math.abs
 Music:tick(.6);check(Music.state=='not running','frozen helper stops animation quickly')
 packet(71,0,0,0,'paused');Music:tick(.05);check(Music.state=='paused' and Music.level==0,'paused helper rests')
 signal=nil;Music:tick(.05);check(Music.state=='not running','missing helper is harmless')
+
+for _,effect in ipairs({'dance','wave','bars','stretch'})do
+ for _,speed in ipairs({.1,.2,.25,.33,.5,.75,1,1.25,1.5,2})do
+  values.music_effect=effect;values.music_speed=speed
+  local V=assert(load(read('music'),'music effects','t',env))()(mod)
+  local peaks={0,0,0,0,0,0}
+  packet(1,0,0,0);V:tick(.05)
+  for sample=1,150 do
+   packet(sample+1,1,.03*(.5+.5*math.sin(sample*.1)),.03);V:tick(.05)
+   for rank=0,5 do
+    local pose=V:pose(rank,'down')
+    check(pose.frame>=0 and pose.frame<=3 and pose.frame%1==0,'effect frame stays valid')
+    check(pose.offsetY<=0 and pose.offsetY>=-16,'bar movement stays within one tile of anchor')
+    check(pose.sx>=.88 and pose.sx<=1.04 and pose.sy>=.96 and pose.sy<=1.7,'bounded stretch and dance dimensions')
+    peaks[rank+1]=math.max(peaks[rank+1],-pose.hop)
+    if effect=='stretch' then check(pose.offsetY==0 and pose.hop==0,'stretch effect preserves feet anchor')end
+    if effect=='bars' then check(not pose.jumping and pose.sx==1 and pose.sy==1,'bar movement uses walking instead of stretching or hopping')end
+   end
+  end
+  if effect=='wave' then for _,peak in ipairs(peaks)do check(peak>0,'wave reaches every follower even at slowest speed')end end
+  signal=nil;V:tick(.05);local pose=V:pose(5,'down')
+  check(pose.offsetY==0 and pose.hop==0 and pose.sy==1,'all effects reset when helper stops')
+ end
+end
+-- A slower wave stays airborne longer, but still reaches the tail.
+values.music_effect='wave'
+local duration={}
+for _,speed in ipairs({.25,1})do
+ values.music_speed=speed;local V=assert(load(read('music'),'wave timing','t',env))()(mod)
+ packet(1,0);V:tick(.05);packet(2,1);V:tick(.05)
+ local active=0
+ for sample=1,60 do packet(sample+2,1);V:tick(.05);if V:pose(0,'down').jumping then active=active+1 end end
+ duration[#duration+1]=active
+end
+check(duration[1]>duration[2]*3,'speed setting lengthens jump wave instead of only changing sprite frames')
 print('PASS '..checks..' local music bridge, beat wave, idle interruption, silence and malformed/stale input checks')

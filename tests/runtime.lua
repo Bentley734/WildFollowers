@@ -232,6 +232,17 @@ for _,key in ipairs({'followers_march_speed','wilds_march_speed'})do
  eq(values[key],1,'march speed returns to normal')
 end
 
+for _,spec in ipairs({{'music_effect','DANCE','dance','wave'},{'music_speed','50%',.5,.75}})do
+ local row
+ for _,r in ipairs(settings)do if r.id=='wildfollowers.'..spec[1] then row=r end end
+ check(row~=nil,'visualizer effect/speed appears in native menu')
+ eq(row.value(),spec[2],'visualizer menu default is correct')
+ check(row.step({game=game},1),'visualizer option persists')
+ eq(values[spec[1]],spec[4],'visualizer option updates live bucket')
+ check(row.step({game=game},-1),'visualizer option restores default')
+ eq(values[spec[1]],spec[3],'visualizer default restored')
+end
+
 local speedRow,runRow
 for _,row in ipairs(settings)do
  if row.id=='wildfollowers.OW_FOLLOWERS_CATCH_UP_SPEED' then speedRow=row end
@@ -245,8 +256,8 @@ eq(speedRow.value(),'3X','native page reads updated choice label')
 check(runRow.step(context,1),'main toggle changes live mod setting')
 eq(values.OW_FOLLOWERS_RUN_TO_CATCH_UP,false,'main toggle shares mod manager value')
 eq(runRow.value(),'OFF','native page reads updated toggle label')
-eq(written,12,'main setting changes persist through engine writer')
-eq(emitted,12,'main setting changes emit normal mod option events')
+eq(written,16,'main setting changes persist through engine writer')
+eq(emitted,16,'main setting changes emit normal mod option events')
 speedRow.step(context,-1);runRow.step(context,1)
 game.writeOptions=originalWrite
 -- Real Mods manager writes the save-options bucket before the engine writer.

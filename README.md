@@ -438,3 +438,7 @@ March speed applies while stationary. Walking always uses normal walking animati
 
 ## 3.4.0 — Music Visualizer
 Followers can dance to PC output audio while idle. Run the included Windows helper, select MUSIC VISUALIZER under IDLE BEHAVIOR, and adjust MUSIC SENSITIVITY. See [music/README.md](music/README.md) for setup, controls and local audio handling.
+
+
+## 3.4.1 — Visualizer effects and speed
+MUSIC EFFECT offers Dance, Wave Jumps, Bar Walk / Run and Bar Stretch. VISUALIZER SPEED ranges from 10% to 200%, with a calmer 50% default. All effects return to normal following when you walk.

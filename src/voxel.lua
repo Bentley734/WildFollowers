@@ -39,7 +39,8 @@ return function(mod,include)
     sprite.anchorX=sprite.frameWidth/2;sprite.anchorY=sprite.frameHeight
     def.frameWidth,def.frameHeight=sprite.frameWidth,sprite.frameHeight
     def.anchorX,def.anchorY=sprite.anchorX,sprite.anchorY
-    return sprite,actor.px,actor.py,facing,0,false,false
+    local offset=pose and (not actor.moving or actor.spacingPaused) and (pose.offsetY or 0) or 0
+    return sprite,actor.px,actor.py+offset,facing,0,false,false
   end
   function bridge:install()
     if self.disposed then return end

@@ -102,6 +102,15 @@ for gen=1,3 do
  local musicSprite=V:pose(dancing);check(musicSprite.def._wildFollowers.frame==2,'music frame overrides standing march in native pose')
  dancing.moving=true;dancing.clock=.13
  check(S:frame(dancing)==1,'walking interrupts music frames as well as march speed')
+ -- Bar motion changes rendered position without altering the actor/trail.
+ dancing.moving=false;dancing.idlePose.offsetY=-12
+ local shifts={};G.translate=function(x,y)shifts[#shifts+1]={x,y}end
+ S:draw(dancing,0,0,1)
+ check(shifts[1][1]==0 and shifts[1][2]==-12,'2D bar displacement is applied before scaling')
+ local _,barX,barY=V:pose(dancing)
+ check(barX==100 and barY==188 and dancing.py==200,'native bar displacement preserves logical coordinates')
+ dancing.moving=true
+ local _,_,walkingY=V:pose(dancing);check(walkingY==200,'walking immediately removes bar offset')
  -- Independent speed multipliers must match in 2D and native/3D poses.
  for _,follower in ipairs({true,false})do
   local key=follower and 'followers_march' or 'wilds_march'

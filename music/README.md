@@ -1,9 +1,10 @@
 # Music Visualizer — Windows
 
-1. Restart the game after installing WildFollowers 3.4.0.
+1. Restart the game after installing WildFollowers 3.4.1.
 2. Run `music/WildFollowersMusic.exe` from the extracted WildFollowers mod folder. The helper runs in the notification area; right-click its icon to pause/resume or exit. It is self-contained and requires no separate .NET installation.
 3. In WILDFOLLOWERS, set IDLE BEHAVIOR to MUSIC VISUALIZER. IDLE TIME determines how long you must stand still first; MUSIC SENSITIVITY offers LOW, NORMAL, HIGH and VERY HIGH.
-4. Play music in your browser, player, or another app. Bass onsets send a hop down the line; volume controls the strength of the dance. Walking, menus, battles and ball animations cancel the idle dance normally.
+4. Choose MUSIC EFFECT: DANCE, WAVE JUMPS, BAR WALK / RUN, or BAR STRETCH. VISUALIZER SPEED offers 10%–200%, defaulting to 50%; try 10% or 25% for a slow response. Speed controls animation, wave timing and bar response; MUSIC SENSITIVITY controls strength. Bar movement changes only the rendered body position, preserving the follower's place in line.
+5. Play music in your browser, player, or another app. Bass onsets send a hop down the line; volume controls the strength of the dance. Walking, menus, battles and ball animations cancel the idle dance normally.
 
 Run the helper once per PC session, including after a PC restart. It never installs a service or startup task. Switching the default output device is detected automatically. It captures the default Windows multimedia output, which includes game audio, notifications and other apps as well as music. To react only to outside music, lower the game's music/sound volume. App-specific audio capture is not included in this version.
 

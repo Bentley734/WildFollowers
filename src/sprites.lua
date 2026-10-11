@@ -128,6 +128,7 @@ return function(mod,include)
     J:shadow(actor,ox,oy,scale,oamRow)
     G.push('all');G.setColor(1,1,1,1)
     if pose and (not actor.moving or actor.spacingPaused) and not actor.ballPhase then
+      G.translate(0,(pose.offsetY or 0)*scale)
       local cx,cy=ox+(actor.px+8)*scale,oy+(actor.py+footY)*scale
       G.translate(cx,cy);G.scale(pose.sx or 1,pose.sy or 1);G.translate(-cx,-cy)
     end
