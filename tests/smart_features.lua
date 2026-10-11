@@ -101,9 +101,9 @@ for gen=1,3 do
   local other=follower and 'wilds_march' or 'followers_march'
   values[key]=true;values[other]=true;values[other..'_speed']=3
   local a={national=1,follower=follower,px=100,py=200,clock=0,facing='down'}
-  for _,speed in ipairs({.5,.75,1,1.25,1.5,2,3})do
+  for _,speed in ipairs({.1,.2,.25,.33,.5,.75,1,1.25,1.5,2,3})do
    values[key..'_speed']=speed
-   for sample=0,15 do
+   for sample=0,95 do
     a.clock=sample*.07
     local expected=math.floor(a.clock*8*speed)%4
     S:draw(a,0,0,1);check(drawn==expected,'chosen march speed drives 2D animation independently')
@@ -118,3 +118,4 @@ for gen=1,3 do
 
 end
 print('PASS '..checks..' smart alpha bounds, pairwise spacing, manual minimum, march toggles and 2D/native pose checks')
+

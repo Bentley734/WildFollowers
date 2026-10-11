@@ -426,3 +426,7 @@ Smoother smart catch-up, safe partial movement at sprite boundaries, leaders adv
 
 ## 3.3.7
 Separate FOLLOWERS MARCH SPEED and WILDS MARCH SPEED choices offer 50%–300%, defaulting to 100%. Restart after updating.
+
+
+## 3.3.8
+Both march speed settings now include 10%, 20%, 25%, and 33% for slower animation.

@@ -97,7 +97,7 @@ return function(mod,include)
   end
   function S:frame(actor)
     local march=mod.options:get(actor.follower and 'followers_march' or 'wilds_march')==true
-    local speed=march and math.max(.5,math.min(3,tonumber(mod.options:get(actor.follower and 'followers_march_speed' or 'wilds_march_speed')) or 1)) or 1
+    local speed=march and math.max(.1,math.min(3,tonumber(mod.options:get(actor.follower and 'followers_march_speed' or 'wilds_march_speed')) or 1)) or 1
     local pose=actor.idlePose
     local frame=((actor.moving and not actor.spacingPaused) or march) and math.floor((actor.clock or 0)*8*speed)%4 or (pose and pose.frame or 0)
     -- Moving wilds keep their complete step cycle; march speed controls their
