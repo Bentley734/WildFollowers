@@ -377,7 +377,11 @@ return function(mod,include)
         (p.px or p.cellX*16)+16,(p.py or p.cellY*16)+foot}
       local blocked=overlap(newBox,trainerBox)>overlap(oldBox,trainerBox)+.000001
       for _,other in ipairs(self.followers)do
-        if other~=e and not other.hidden and not other.ballPhase then
+        -- A leader must never wait for a follower behind it: that follower
+        -- already depends on the leader's trail progress, creating a deadlock.
+        local rank=e.lineSlot or e.slot or 1
+        local otherRank=other.lineSlot or other.slot or 1
+        if other~=e and otherRank<rank and not other.hidden and not other.ballPhase then
           local box=S:box(other)
           if overlap(newBox,box)>overlap(oldBox,box)+.000001 then blocked=true;break end
         end

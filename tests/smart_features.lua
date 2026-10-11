@@ -53,8 +53,8 @@ for gen=1,3 do
  local code=source('controller');local first=assert(code:find('  function C:animate',1,true))
  local last=assert(code:find('  function C:syncFollowers',first,true))
  assert(load(code:sub(first,last-1),'production animation overlap guard','t',env))()
- local front={national=1,px=24,py=0,cellX=2,cellY=0,follower=true}
- local e={national=1,px=0,py=0,cellX=0,cellY=0,follower=true,clock=0,moving=true,
+ local front={lineSlot=1,national=1,px=24,py=0,cellX=2,cellY=0,follower=true}
+ local e={lineSlot=2,national=1,px=0,py=0,cellX=0,cellY=0,follower=true,clock=0,moving=true,
   startX=0,startY=0,targetX=1,targetY=0,progress=0,duration=.2}
  C.followers={e,front};C:animate(e,.1)
  check(e.px==8,'safe partial step reaches edge')
@@ -67,6 +67,13 @@ for gen=1,3 do
  e.px=20;e.startX=20;e.progress=0;e.targetX=0
  C.followers={e,front};C:animate(e,.1)
  check(e.px==10,'existing overlap can unwind rather than trapping actor')
+ -- A turn can bring the leader towards a trailing body. Checking that tail
+ -- makes the leader wait for the tail, which itself waits for the leader.
+ e.lineSlot=1;front.lineSlot=2;e.startX=0;e.px=0;e.py=0;e.progress=0;e.targetX=1;e.targetY=0;e.moving=true
+ front.px=24;front.py=0
+ C:animate(e,.1);C:animate(e,.1)
+ check(e.cellX==1 and not e.moving,'leader completes turn without waiting for tail')
+
  for _,follower in ipairs({true,false})do
   local key=follower and 'followers_march' or 'wilds_march'
   local a={national=1,follower=follower,px=100,py=200,clock=0,facing='down'}
