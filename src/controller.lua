@@ -364,6 +364,26 @@ return function(mod,include)
     e.spacingPaused=limit<1 and e.progress==previous or nil
     e.px=e.startX+(e.targetX*16-e.startX)*e.progress
     e.py=e.startY+(e.targetY*16-e.startY)*e.progress
+    if e.follower and option('smart_spacing')==true and not e.jumpActive and not e.yielding and not e.ballPhase then
+      local function overlap(a,b)
+        return math.max(0,math.min(a[3],b[3])-math.max(a[1],b[1]))
+          *math.max(0,math.min(a[4],b[4])-math.max(a[2],b[2]))
+      end
+      local oldX=e.startX+(e.targetX*16-e.startX)*previous
+      local oldY=e.startY+(e.targetY*16-e.startY)*previous
+      local oldBox,newBox=S:box(e,oldX,oldY),S:box(e,e.px,e.py)
+      local p=A:player();local foot=A.generation==3 and 16 or 12
+      local trainerBox={(p.px or p.cellX*16),(p.py or p.cellY*16)+foot-16,
+        (p.px or p.cellX*16)+16,(p.py or p.cellY*16)+foot}
+      local blocked=overlap(newBox,trainerBox)>overlap(oldBox,trainerBox)+.000001
+      for _,other in ipairs(self.followers)do
+        if other~=e and not other.hidden and not other.ballPhase then
+          local box=S:box(other)
+          if overlap(newBox,box)>overlap(oldBox,box)+.000001 then blocked=true;break end
+        end
+      end
+      if blocked then e.progress=previous;e.px,e.py=oldX,oldY;e.spacingPaused=true end
+    end
     if e.progress==1 then
       e.cellX,e.cellY=e.targetX,e.targetY;e.targetX=nil;e.targetY=nil;e.moving=false;e.rejoining=nil;e.jumpActive=nil;e.spacingPaused=nil
       if e.follower then A:land(e) else W:land(e);W:sync(e) end
@@ -511,6 +531,7 @@ return function(mod,include)
     self.routeBudget=64
     self.routeAllowances={}
     self:syncFollowers()
+    T:updateSpacing(self.followers,S)
     B:seedTrail(self,T)
     if p.moving then Y:prepare(self) end
     for i,e in ipairs(self.followers) do

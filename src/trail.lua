@@ -6,8 +6,26 @@ return function(mod)
     return math.max(1,math.min(4,math.floor((tonumber(mod and mod.options:get(key)) or 1)*10+.5)/10))
   end
   function T:gap(slot)
+    if mod and mod.options:get('smart_spacing')==true and self.smartGaps and self.smartGaps[slot] then return self.smartGaps[slot] end
     local gap=self:spacing('OW_FOLLOWERS_TRAINER_SPACING')+(slot-1)*self:spacing('OW_FOLLOWERS_SPACING')
     return math.floor(gap*10+.5)/10
+  end
+  function T:updateSpacing(followers,S)
+    self.smartGaps={}
+    if not mod or mod.options:get('smart_spacing')~=true then return end
+    local ordered={};for _,e in ipairs(followers)do ordered[e.lineSlot or e.slot]=e end
+    local previous={left=8,right=8,top=16,bottom=0};local total=0
+    for rank=1,#followers do
+      local e=ordered[rank];if not e then break end
+      local b=S:extent(e);e._smartExtent=b
+      -- A small margin also leaves room for the optional idle stretch poses.
+      local padding=mod.options:get('OW_FOLLOWERS_IDLE_MODE')~='none' and 1.25 or 1
+      local needed=math.max(previous.right+b.left,previous.left+b.right,
+        previous.top+b.bottom,previous.bottom+b.top)*padding+2
+      local minimum=self:spacing(rank==1 and 'OW_FOLLOWERS_TRAINER_SPACING' or 'OW_FOLLOWERS_SPACING')
+      total=total+math.max(minimum,math.ceil(needed/16*10)/10)
+      self.smartGaps[rank]=math.floor(total*10+.5)/10;previous=b
+    end
   end
   function T:cellGap(slot) return math.ceil(self:gap(slot)-.000001) end
   function T:joinGap(slot)

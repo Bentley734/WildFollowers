@@ -1,6 +1,7 @@
 return function(mod,include)
   local J=include('jumps')
   local waterBounds=include('water_bounds')
+  local visibleBounds=include('sprite_bounds')
   local S={cache={}}
   local EE=include('ee_data')
   local Forms=include('forms')
@@ -79,6 +80,20 @@ return function(mod,include)
     self.cache[path]=record
     return record
   end
+  function S:extent(actor)
+    local r=self:get(actor.national,actor)
+    if not r then return {left=8,right=8,top=16,bottom=0} end
+    local b=visibleBounds[r.path] or {0,0,r.w,r.h}
+    local size=r.ee and 1 or 32/r.w
+    return {left=math.max(0,(r.w/2-b[1])*size),right=math.max(0,(b[3]-r.w/2)*size),
+      top=math.max(0,(r.h-b[2])*size),bottom=math.max(0,(b[4]-r.h)*size)}
+  end
+  function S:box(actor,x,y)
+    local b=actor._smartExtent or self:extent(actor)
+    local pose=actor.idlePose;local sx=pose and pose.sx or 1;local sy=pose and pose.sy or 1
+    x=(x or actor.px)+8;y=(y or actor.py)+footY
+    return {x-b.left*sx,y-b.top*sy,x+b.right*sx,y+b.bottom*sy}
+  end
   function S:draw(actor,ox,oy,scale,oamRow)
     local r=self:get(actor.national,actor);if not r or actor.hidden then return end
     local G=love.graphics;scale=scale or 1
@@ -86,7 +101,8 @@ return function(mod,include)
     local size=r.ee and 1 or 32/r.w
     local pose=actor.idlePose
     local facing=pose and pose.facing or actor.facing or 'down'
-    local frame=actor.moving and not actor.spacingPaused and math.floor((actor.clock or 0)*8)%4 or (pose and pose.frame or 0)
+    local march=mod.options:get(actor.follower and 'followers_march' or 'wilds_march')==true
+    local frame=((actor.moving and not actor.spacingPaused) or march) and math.floor((actor.clock or 0)*8)%4 or (pose and pose.frame or 0)
     if not actor.follower and actor.moving and not actor.spacingPaused and actor.progress~=nil then
       -- A short wild step must still visit all walk poses, independent of the
       -- global idle clock. Standing frame zero returns naturally on landing.

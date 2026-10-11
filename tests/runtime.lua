@@ -210,6 +210,17 @@ else
  eq(pageTitle,'WILDFOLLOWERS','GBA group opens its own titled native page')
 end
 eq(#settings,#optionRows,'main options exposes the complete existing schema')
+for _,spec in ipairs({{'smart_spacing','SMART SPACING'},{'wilds_march','WILDS MARCH'},{'followers_march','FOLLOWERS MARCH'}})do
+ local row
+ for _,r in ipairs(settings)do if r.id=='wildfollowers.'..spec[1] then row=r end end
+ check(row and row.label==spec[2],'new option appears in WildFollowers submenu')
+ eq(row.value(),'OFF','new option defaults OFF')
+ check(row.step({game=game},1),'new option persists ON')
+ eq(values[spec[1]],true,'new option updates live value')
+ check(row.step({game=game},1),'new option persists OFF')
+ eq(values[spec[1]],false,'new option restores OFF')
+end
+
 local speedRow,runRow
 for _,row in ipairs(settings)do
  if row.id=='wildfollowers.OW_FOLLOWERS_CATCH_UP_SPEED' then speedRow=row end
@@ -223,8 +234,8 @@ eq(speedRow.value(),'3X','native page reads updated choice label')
 check(runRow.step(context,1),'main toggle changes live mod setting')
 eq(values.OW_FOLLOWERS_RUN_TO_CATCH_UP,false,'main toggle shares mod manager value')
 eq(runRow.value(),'OFF','native page reads updated toggle label')
-eq(written,2,'main setting changes persist through engine writer')
-eq(emitted,2,'main setting changes emit normal mod option events')
+eq(written,8,'main setting changes persist through engine writer')
+eq(emitted,8,'main setting changes emit normal mod option events')
 speedRow.step(context,-1);runRow.step(context,1)
 game.writeOptions=originalWrite
 -- Real Mods manager writes the save-options bucket before the engine writer.
