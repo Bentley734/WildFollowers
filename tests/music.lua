@@ -40,7 +40,7 @@ Music:tick(.6);check(Music.state=='not running','frozen helper stops animation q
 packet(71,0,0,0,'paused');Music:tick(.05);check(Music.state=='paused' and Music.level==0,'paused helper rests')
 signal=nil;Music:tick(.05);check(Music.state=='not running','missing helper is harmless')
 
-for _,effect in ipairs({'dance','wave','bars','stretch'})do
+for _,effect in ipairs({'dance','wave','solo','bars','stretch'})do
  for _,speed in ipairs({.1,.2,.25,.33,.5,.75,1,1.25,1.5,2})do
   values.music_effect=effect;values.music_speed=speed
   local V=assert(load(read('music'),'music effects','t',env))()(mod)
@@ -91,4 +91,14 @@ packet(1,0);Q:tick(.05)
 for beat=1,30 do packet(beat+1,beat);Q:tick(.25)end
 check(#Q.events==30,'slow waves retain all detected beats until their tail finishes')
 check(Q:pose(5,'down').jumping,'tail remains animated with frequent beats at slow speed')
+-- Beats rotate through the current party, with no rank delay or shared hop.
+values.music_effect='solo';values.music_speed=2
+local S=assert(load(read('music'),'solo beats','t',env))()(mod)
+packet(1,0);S:tick(.05,3)
+for beat=1,9 do
+ packet(beat*2,beat);S:tick(.25,3)
+ packet(beat*2+1,beat);S:tick(.05,3)
+ for rank=0,2 do check(S:pose(rank,'down').jumping==(rank==(beat-1)%3),'each beat jumps only its assigned follower')end
+end
+check(S.events[#S.events].rank==2,'rotation wraps using actual follower count')
 print('PASS '..checks..' local music bridge, beat wave, idle interruption, silence and malformed/stale input checks')

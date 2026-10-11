@@ -2,7 +2,8 @@
 return function(mod)
   local M={state='not running',level=0,events={},history={},age=0,poll=0}
   local function unit(v)return math.max(0,math.min(1,v))end
-  function M:tick(dt)
+  function M:tick(dt,count)
+    self.count=math.max(1,math.min(6,count or self.count or 6))
     self.age=self.age+dt;self.poll=self.poll+dt
     while self.events[1] and self.age-self.events[1].time>8 do table.remove(self.events,1)end
     if self.poll<.05 then return end
@@ -28,9 +29,10 @@ return function(mod)
     self.level=self.level+(target-self.level)*math.min(1,elapsed*12*self:speed())
     if self.beats and beats>self.beats and seq~=self.seq
         -- Waves overlap: animation speed must not discard incoming beats.
-        and (mod.options:get('music_effect')=='wave' or not self.lastPulse or self.age-self.lastPulse>=.4/self:speed()) then
+        and (mod.options:get('music_effect')=='wave' or mod.options:get('music_effect')=='solo' or not self.lastPulse or self.age-self.lastPulse>=.4/self:speed()) then
       self.lastPulse=self.age
-      self.events[#self.events+1]={time=self.age,strength=unit(math.max(.25,math.sqrt(bass)*4*gain))}
+      local turn=self.turn or 0;self.turn=(turn+1)%self.count
+      self.events[#self.events+1]={rank=turn%self.count,time=self.age,strength=unit(math.max(.25,math.sqrt(bass)*4*gain))}
       if #self.events>64 then table.remove(self.events,1)end
     end
     self.history[#self.history+1]={time=self.age,level=self.level}
@@ -61,10 +63,11 @@ return function(mod)
     local effect=mod.options:get('music_effect') or 'dance'
     local pulse=0
     for _,event in ipairs(self.events)do
-      local age=(self.age-event.time)*speed-rank*.065
+      local age=(self.age-event.time)*speed-(effect=='solo' and 0 or rank*.065)
+      if effect=='solo' and event.rank~=rank then age=-1 end
       if age>=0 and age<.36 then pulse=math.max(pulse,math.sin(age/.36*math.pi)*event.strength)end
     end
-    if effect=='wave' then
+    if effect=='wave' or effect=='solo' then
       pose.hop=-10*pulse;pose.jumping=pulse>.001
       pose.frame=pulse>.001 and 1 or 0
     elseif effect=='bars' or effect=='stretch' then

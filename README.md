@@ -446,3 +446,7 @@ MUSIC EFFECT offers Dance, Wave Jumps, Bar Walk / Run and Bar Stretch. VISUALIZE
 ## 3.4.2 — Overlapping beat waves
 
 Wave Jumps accepts each detected beat independently of animation speed. Earlier waves keep moving down the line while new waves begin at the first follower.
+
+## 3.4.3 — Solo Beats
+
+Select SOLO BEATS under Music effect to give successive detected beats to successive followers. The rotation uses the current follower count; visualizer speed controls jump duration.

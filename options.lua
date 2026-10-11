@@ -20,7 +20,7 @@ return {
   {key='OW_FOLLOWERS_RUN_TO_CATCH_UP',label='Run to catch up',type='toggle',default=true},
   {key='OW_FOLLOWERS_CATCH_UP_SPEED',label='Catch-up speed',type='choice',default=2,choices={{'2X',2},{'3X',3},{'4X',4},{'6X',6}}},
   {key='OW_FOLLOWERS_IDLE_MODE',label='Idle behavior',type='choice',default='mixed',choices={{'NONE','none'},{'MUSIC VISUALIZER','music'},{'MIXED','mixed'},{'RANDOM','random'},{'RANDOM WAVE','random_wave'},{'LOOK AROUND','look'},{'IDLE WALK','walk'},{'JUMP','jump'},{'JUMP WAVE','wave'},{'SINGLE JUMP WAVE','wave_single'},{'SPIN WAVE','spin'},{'BOUNCE WAVE','bounce'},{'PULSE WAVE','pulse'},{'COPYCAT','copycat'},{'DANCE','dance'},{'STRETCH','stretch'},{'DOZE','doze'},{'CHEER','cheer'},{'WANDER','wander'}}},
-  {key='music_effect',label='Music effect',type='choice',default='dance',choices={{'DANCE','dance'},{'WAVE JUMPS','wave'},{'BAR WALK / RUN','bars'},{'BAR STRETCH','stretch'}}},
+  {key='music_effect',label='Music effect',type='choice',default='dance',choices={{'DANCE','dance'},{'WAVE JUMPS','wave'},{'SOLO BEATS','solo'},{'BAR WALK / RUN','bars'},{'BAR STRETCH','stretch'}}},
   {key='music_speed',label='Visualizer speed',type='choice',default=.5,choices={{'10%',.1},{'20%',.2},{'25%',.25},{'33%',.33},{'50%',.5},{'75%',.75},{'100%',1},{'125%',1.25},{'150%',1.5},{'200%',2}}},
   {key='music_sensitivity',label='Music sensitivity',type='choice',default=1,choices={{'LOW',.5},{'NORMAL',1},{'HIGH',2},{'VERY HIGH',4}}},
   {key='OW_FOLLOWERS_IDLE_TIME',label='Idle time',type='choice',default=3,choices={{'1 SECOND',1},{'3 SECONDS',3},{'5 SECONDS',5},{'10 SECONDS',10},{'30 SECONDS',30},{'60 SECONDS',60}}},

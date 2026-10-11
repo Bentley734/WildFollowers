@@ -1,6 +1,6 @@
 # Music Visualizer — Windows
 
-1. Restart the game after installing WildFollowers 3.4.2.
+1. Restart the game after installing WildFollowers 3.4.3.
 2. Run `music/WildFollowersMusic.exe` from the extracted WildFollowers mod folder. The helper runs in the notification area; right-click its icon to pause/resume or exit. It is self-contained and requires no separate .NET installation.
 3. In WILDFOLLOWERS, set IDLE BEHAVIOR to MUSIC VISUALIZER. IDLE TIME determines how long you must stand still first; MUSIC SENSITIVITY offers LOW, NORMAL, HIGH and VERY HIGH.
 4. Choose MUSIC EFFECT: DANCE, WAVE JUMPS, BAR WALK / RUN, or BAR STRETCH. VISUALIZER SPEED offers 10%–200%, defaulting to 50%; try 10% or 25% for a slow response. Speed controls animation, wave timing and bar response; MUSIC SENSITIVITY controls strength. Bar movement changes only the rendered body position, preserving the follower's place in line.

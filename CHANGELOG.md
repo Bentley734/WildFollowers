@@ -1,4 +1,4 @@
-## 3.4.2
+## 3.4.3
 
-- Wave Jumps starts a new wave on each detected beat, while earlier waves continue down the follower line.
-- Retain overlapping waves at slow visualizer speeds instead of dropping them from the queue.
+- Add SOLO BEATS music effect: each detected beat goes to the next follower, rotating through the current party.
+- Individual jumps use the visualizer speed setting and can overlap independently.

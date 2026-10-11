@@ -11,7 +11,7 @@ return function(mod)
   mod.options:define(schema)
   local controller=include('controller')
   include('menu'):install(controller,schema)
-  mod.exports.version='3.4.2'
+  mod.exports.version='3.4.3'
   mod.exports.numbering='national'
   mod.exports.supportedGames={'red','blue','yellow','gold','silver','crystal','ruby','sapphire','firered','leafgreen','emerald'}
   mod.exports.status=function() return controller:status() end
