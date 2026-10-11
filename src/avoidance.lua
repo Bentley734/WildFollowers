@@ -26,7 +26,7 @@ return function(mod,include)
   end
   function M:yield(c,e)
     if not self:threatened(e) then return false end
-    e.yielding=true;e.targetStep=nil;e.rejoinGoal=nil
+    e.yielding=true;e.targetStep=nil;e.rejoinGoal=nil;e.returnRoute=nil;e.joinTarget=nil
     local p=A:player()
     if e.moving then
       if not (e.targetX==p.cellX and e.targetY==p.cellY
@@ -148,6 +148,16 @@ return function(mod,include)
       if e.cellX==goal.x and e.cellY==goal.y then return nil,goal end
     end
     if not available then return nil end
+    -- Finish a chosen detour instead of greedily turning back at its corners.
+    local cached=e.returnRoute
+    local same=cached and cached.goal.x==goals[1].x and cached.goal.y==goals[1].y
+    if same then
+      while cached.steps[1] and cached.steps[1].x==e.cellX and cached.steps[1].y==e.cellY do table.remove(cached.steps,1) end
+      local nextStep=cached.steps[1]
+      if nextStep and math.abs(nextStep.x-e.cellX)+math.abs(nextStep.y-e.cellY)==1
+          and self:legal(c,e,nextStep.x,nextStep.y) then return nextStep,cached.goal end
+    end
+    e.returnRoute=nil
     local queue={{x=e.cellX,y=e.cellY}}
     local seen={[e.cellX..':'..e.cellY]=true};local head=1
     local ordered={}
@@ -160,7 +170,7 @@ return function(mod,include)
     -- Most displaced companions only need to approach an open trail cell.
     -- Try a single closer step before considering a bounded detour search.
     local distance=math.abs(e.cellX-preferred.x)+math.abs(e.cellY-preferred.y)
-    if targets[preferred.x..':'..preferred.y] then
+    if not same and targets[preferred.x..':'..preferred.y] then
       for _,d in ipairs(ordered) do
         local x,y=e.cellX+d[1],e.cellY+d[2]
         if math.abs(x-preferred.x)+math.abs(y-preferred.y)<distance
@@ -184,8 +194,14 @@ return function(mod,include)
           if self:legal(c,e,x,y,node.x,node.y) then
             local first=node.first or {x=x,y=y}
             local goal=targets[key]
-            if goal then return first,goal end
-            queue[#queue+1]={x=x,y=y,first=first}
+            if goal then
+              local steps={{x=x,y=y}}
+              local parent=node
+              while parent.parent do table.insert(steps,1,{x=parent.x,y=parent.y});parent=parent.parent end
+              e.returnRoute={goal=goal,steps=steps}
+              return steps[1],goal
+            end
+            queue[#queue+1]={x=x,y=y,first=first,parent=node}
           end
         end
       end
@@ -219,7 +235,7 @@ return function(mod,include)
       end
     end
     e.lineSlot=goal.slot;e.trailStep=goal.n
-    e.yielding=nil;e.arrivalAnchor=nil;e.joinTarget=nil;e.joinSlot=nil;e.joinGap=nil;e.joinBlocked=nil
+    e.yielding=nil;e.arrivalAnchor=nil;e.returnRoute=nil;e.joinTarget=nil;e.joinSlot=nil;e.joinGap=nil;e.joinBlocked=nil
   end
   function M:tick(c,e)
     self:yield(c,e)
@@ -237,7 +253,10 @@ return function(mod,include)
       local n=T.index-(e.joinGap or T:cellGap(e.joinSlot))
       local point=T.points[n]
       if point and not point.interior then
-        local locked={x=point.x,y=point.y,n=n,slot=e.joinSlot,epoch=T.index}
+        -- Keep the recorded rendezvous while returning; normal trail replay
+        -- catches up after landing, even when the trainer keeps walking.
+        local locked=e.joinTarget or {x=point.x,y=point.y,n=n,slot=e.joinSlot,epoch=T.index}
+        point=locked
         step,goal=self:route(c,e,{locked})
         if not goal and math.abs(e.cellX-point.x)+math.abs(e.cellY-point.y)>1 then
           -- A teammate may still be vacating the reserved position. Approach

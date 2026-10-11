@@ -414,3 +414,7 @@ Fixes smart-spacing followers stopping at turns. The overlap guard previously ma
 Validation: the production-code regression reproduces the leader/tail stall in 3.3.3 and passes in 3.3.4. 189 targeted spacing/overlap/march checks pass across Gen 1/2/3, alongside full runtime and native movement fixtures across all eleven games. Twenty-two dedicated smart-spacing fixtures drive six followers with both G9 and EE artwork through five multi-tile turns using all eleven cartridges' actual native player movement. No live gameplay capture.
 
 Restart the game to reload the updated movement code.
+
+
+## 3.3.5
+Followers keep one return destination and finish obstacle detours without circling back. Restart the game after updating.
