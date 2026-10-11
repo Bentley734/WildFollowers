@@ -15,7 +15,7 @@ for gen=1,3 do
   {path='ee',w=64,h=64,ee=true,quads={down={[0]=0,1,2,3}}}}
  local J={pose=function()return 0 end,shadow=function()end}
  local S=loadmod('sprites',function(n)
-  if n=='jumps'then return J elseif n=='sprite_bounds'then return {g9={16,16,48,64},ee={2,2,62,64}} else return {} end
+  if n=='jumps'then return J elseif n=='sprite_bounds'then return {g9={down={16,16,48,64},right={20,16,44,64}},ee={2,2,62,64}} else return {} end
  end)
  S.get=function(_,n)return records[n]end
  local V=loadmod('voxel',function(n)return n=='sprites' and S or J end)
@@ -23,8 +23,23 @@ for gen=1,3 do
   {national=2,lineSlot=2,follower=true,px=-64,py=0,clock=0,facing='down'}}
  local T=loadmod('trail')
  T:updateSpacing(followers,S)
- check(T:gap(1)==1.7,'trimmed G9 alpha size, not full canvas')
- check(T:gap(2)==5.7,'large EE follower adds independent safe distance')
+ check(T:gap(1)==1.1,'trimmed G9 alpha size, not full canvas')
+ check(T:gap(2)==3.6,'large EE follower adds independent safe distance')
+ -- Horizontal lines must not inherit a tall sprite's vertical height.
+ followers[1].facing='right';followers[2].facing='right'
+ T:updateSpacing(followers,S,{px=64,py=0,facing='right'})
+ check(T:gap(1)==1,'horizontal trainer gap uses width')
+ check(T:gap(2)==3.4,'horizontal pair uses facing width')
+ values.OW_FOLLOWERS_IDLE_MODE='mixed'
+ T:updateSpacing(followers,S,{px=64,py=0,facing='right'})
+ check(T:gap(2)==3.4,'idle mode cannot inflate smart spacing')
+ check(T:joinGap(6)==6,'smart catch-up does not add two tiles per follower')
+ local compact={}
+ for i=1,6 do compact[i]={national=1,lineSlot=i,follower=true,px=-i*16,py=0,facing='right'}end
+ T:updateSpacing(compact,S,{px=0,py=0,facing='right'})
+ check(T:gap(6)==6,'six narrow followers stay one tile apart despite tall artwork')
+ check(T:joinGap(6)==6,'compact catch-up uses actual six-tile line length')
+ values.OW_FOLLOWERS_IDLE_MODE='none'
  values.OW_FOLLOWERS_TRAINER_SPACING=4;T:updateSpacing(followers,S)
  check(T:gap(1)==4,'manual spacing remains minimum')
  values.smart_spacing=false

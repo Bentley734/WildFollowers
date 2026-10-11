@@ -83,13 +83,14 @@ return function(mod,include)
   function S:extent(actor)
     local r=self:get(actor.national,actor)
     if not r then return {left=8,right=8,top=16,bottom=0} end
-    local b=visibleBounds[r.path] or {0,0,r.w,r.h}
+    local bounds=visibleBounds[r.path]
+    local b=bounds and (bounds[actor.facing or 'down'] or bounds) or {0,0,r.w,r.h}
     local size=r.ee and 1 or 32/r.w
     return {left=math.max(0,(r.w/2-b[1])*size),right=math.max(0,(b[3]-r.w/2)*size),
-      top=math.max(0,(r.h-b[2])*size),bottom=math.max(0,(b[4]-r.h)*size)}
+      top=math.max(0,(r.h-b[2])*size),bottom=(b[4]-r.h)*size}
   end
   function S:box(actor,x,y)
-    local b=actor._smartExtent or self:extent(actor)
+    local b=self:extent(actor)
     local pose=actor.idlePose;local sx=pose and pose.sx or 1;local sy=pose and pose.sy or 1
     x=(x or actor.px)+8;y=(y or actor.py)+footY
     return {x-b.left*sx,y-b.top*sy,x+b.right*sx,y+b.bottom*sy}

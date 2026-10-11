@@ -531,7 +531,7 @@ return function(mod,include)
     self.routeBudget=64
     self.routeAllowances={}
     self:syncFollowers()
-    T:updateSpacing(self.followers,S)
+    T:updateSpacing(self.followers,S,p)
     B:seedTrail(self,T)
     if p.moving then Y:prepare(self) end
     for i,e in ipairs(self.followers) do

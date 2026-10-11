@@ -10,26 +10,37 @@ return function(mod)
     local gap=self:spacing('OW_FOLLOWERS_TRAINER_SPACING')+(slot-1)*self:spacing('OW_FOLLOWERS_SPACING')
     return math.floor(gap*10+.5)/10
   end
-  function T:updateSpacing(followers,S)
+  function T:updateSpacing(followers,S,player)
     self.smartGaps={}
     if not mod or mod.options:get('smart_spacing')~=true then return end
     local ordered={};for _,e in ipairs(followers)do ordered[e.lineSlot or e.slot]=e end
     local previous={left=8,right=8,top=16,bottom=0};local total=0
+    local ahead=player
     for rank=1,#followers do
       local e=ordered[rank];if not e then break end
       local b=S:extent(e);e._smartExtent=b
-      -- A small margin also leaves room for the optional idle stretch poses.
-      local padding=mod.options:get('OW_FOLLOWERS_IDLE_MODE')~='none' and 1.25 or 1
-      local needed=math.max(previous.right+b.left,previous.left+b.right,
-        previous.top+b.bottom,previous.bottom+b.top)*padding+2
+      -- Separate on the line's actual axis, not the tallest/widest view.
+      local dx=ahead and ((ahead.px or ahead.cellX*16)-(e.px or e.cellX*16)) or 0
+      local dy=ahead and ((ahead.py or ahead.cellY*16)-(e.py or e.cellY*16)) or 0
+      local facing=(ahead and ahead.facing) or e.facing or 'down'
+      if dx==0 and dy==0 then
+        dx=facing=='left' and -1 or facing=='right' and 1 or 0
+        dy=facing=='up' and -1 or facing=='down' and 1 or 0
+      end
+      local needed
+      if math.abs(dx)>=math.abs(dy) then
+        needed=dx<0 and previous.right+b.left or previous.left+b.right
+      else needed=dy<0 and previous.bottom+b.top or previous.top+b.bottom end
+      needed=needed+1
       local minimum=self:spacing(rank==1 and 'OW_FOLLOWERS_TRAINER_SPACING' or 'OW_FOLLOWERS_SPACING')
       total=total+math.max(minimum,math.ceil(needed/16*10)/10)
-      self.smartGaps[rank]=math.floor(total*10+.5)/10;previous=b
+      self.smartGaps[rank]=math.floor(total*10+.5)/10;previous=b;ahead=e
     end
   end
   function T:cellGap(slot) return math.ceil(self:gap(slot)-.000001) end
   function T:joinGap(slot)
     -- Leave space for source/destination reservations during moving returns.
+    if mod and mod.options:get('smart_spacing')==true then return math.max(self:cellGap(slot),slot) end
     return math.max(self:cellGap(slot),slot*2-1)
   end
   function T:clear() self.points={};self.index=0;self.first=0;self.halfHop=nil;self.arrivalSeed=nil end
