@@ -1,0 +1,42 @@
+{
+  "id": "wildfollowers",
+  "name": "WildFollowers",
+  "version": "3.3.1",
+  "api": 2,
+  "entry": "main.lua",
+  "profile": "content",
+  "category": "MECHANIC",
+  "game_version": ">=0.3.54 <0.4.0",
+  "games": [
+    "red",
+    "blue",
+    "yellow",
+    "gold",
+    "silver",
+    "crystal",
+    "ruby",
+    "sapphire",
+    "firered",
+    "leafgreen",
+    "emerald"
+  ],
+  "priority": 350,
+  "permissions": [
+    "engine_internals"
+  ],
+  "dependencies": [],
+  "optional_dependencies": [
+    "1025dex",
+    "kanto_hoenn"
+  ],
+  "conflicts": [
+    "overworld_wild_spawns",
+    "wilds_of_kanto_gen3",
+    "wilds_of_firered",
+    "untamed_advanced"
+  ],
+  "affects_link": false,
+  "options_schema": "options.lua",
+  "description": "Visible wild Pokemon with living ecosystems: groups, evolved guardians, bounded predator/prey chases, timid reactions and resting. Up to six followers, eleven games, 1025Dex encounters and Hoennto travel.",
+  "github": "Bentley734/WildFollowers"
+}

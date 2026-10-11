@@ -1,0 +1,3 @@
+WildFollowers 3.1.2
+
+Added Yield to player (default ON). Turn OFF to walk through followers without triggering sidesteps or cancelling trail steps into the player destination. Existing recovery steps finish naturally. NPC courtesy, walls, warps and follower recovery remain active.

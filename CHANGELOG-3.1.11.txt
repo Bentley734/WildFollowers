@@ -1,0 +1,7 @@
+WildFollowers 3.1.11 uses base shiny overworld sprites for Mega forms, with the normal base Pokemon as the fallback.
+
+Applies to both wilds and party followers with either G9 or EE selected. Mega forms retain their exact battle identity; this display choice does not change their actual shiny status. Mega base identities also resolve correctly for Gen 1/2 visible actors. The Wingull visible-spawn exclusion is retained.
+
+Validation: all eleven supported games pass the sandbox/native encounter suites under Lua 5.3 and LuaJIT. Tests cover every catalogued Mega form, both sprite settings, wild and follower rendering, absent shiny entries and failed shiny asset loading. Live gameplay has not been tested.
+
+Install WildFollowers-v3.1.11.zip and restart Gen1Recomp.

@@ -1,0 +1,9 @@
+WildFollowers 3.1.8
+
+Fixed empty Gen 1 ponds such as Route 22 (Viridian to the Victory Road entrance). These maps have native fishing groups but no surfing encounter table. Visible water wilds now use the map-specific Super Rod fishing pool when a surfing table is absent. Native surfing tables still take priority; an explicit rate-zero water table stays disabled. Grass encounters never supply water wilds.
+
+When a nearby Gen 1 pond has no wild, it gets the first available spawn slot. This prevents the much larger land area from filling every low-density slot first. Map water cells are cached per population; occupied or blocked ponds back off to normal route spawning. Spawn caps, water toggle, repel and normal movement restrictions still apply.
+
+Validation uses actual imported Route 22 map/tileset/fishing data and the real 1025Dex GB encounter provider. Aquatic wilds spawn and draw in 20/20 seeded low-density trials in each of Red/Blue/Yellow, with no Nidoran. Water-off and fully occupied pond tests pass. Full runtime/rendering tests cover all eleven cartridges under Lua 5.3 and LuaJIT. Live graphical gameplay remains unverified.
+
+Selectable crop OFF/1-3 PX and walking animation remain; surf mounts remain removed.

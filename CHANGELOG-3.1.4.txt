@@ -1,0 +1,5 @@
+WildFollowers 3.1.4
+
+Added SINGLE JUMP WAVE to Idle behavior: one full jump at a time, with a 0.1-second landing break before the next companion. The last companion hands the loop back to the first without an extra group pause. A shared cycle prevents overlapping head/tail jumps. Existing Jump Wave and saved idle choices stay available.
+
+Tested repeated loops with 1, 2 and 6 followers at 30/60/144Hz, ensuring no overlapping jumps, full procession order and continuous looping. Actual fractional formation jumps and G9/EE renderer checks pass across all eleven cartridges under Lua 5.3 and LuaJIT. Live graphical gameplay remains unverified.

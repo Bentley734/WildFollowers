@@ -1,0 +1,9 @@
+WildFollowers 3.1.9
+
+Added independent Water spawn amount: NONE (0), LOW (2), NORMAL (4, default), HIGH (6), VERY HIGH (8). Renamed the existing setting to Land spawn amount and preserved its saved key and selection.
+
+Each source map now fills and trims land and water populations independently. Changing one amount preserves the other habitat's actors. Water NONE and Water wilds OFF remove aquatic actors without changing land limits. The global safety budget is independently 16 land and 16 water actors across active, preview and lingering populations. Departing actors retain their existing linger behavior.
+
+Gen 1 pond sampling fills the selected water budget using cached native water cells; Route 22 fishing fallback remains. Crop and sprite walking options are unchanged.
+
+Validation covers independent filling, raising/lowering both amounts, preserving aquatic actors across land changes, water NONE and water OFF in all eleven games under Lua 5.3 and LuaJIT. Actual Route 22 tests still produce/draw water wilds in every seeded trial in all Gen 1 games. Connected-map regression checks pass. Live graphical gameplay remains unverified.

@@ -1,0 +1,7 @@
+WildFollowers 3.1.10 excludes Wingull from visible land and water wild spawns across all eleven supported games, including species supplied by 1025Dex. National species identity is checked after encounter substitution.
+
+Wingull party followers and normal battle encounters are unchanged; Pelipper remains eligible.
+
+Validation: all eleven game sandbox/native encounter suites pass under Lua 5.3 and LuaJIT, including checks that Wingull is blocked in both habitats and Pelipper remains eligible. Live gameplay has not been tested.
+
+Install WildFollowers-v3.1.10.zip and restart Gen1Recomp.

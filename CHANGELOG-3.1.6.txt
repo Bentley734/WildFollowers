@@ -1,0 +1,9 @@
+WildFollowers 3.1.6
+
+Removed the native surf mounts/underlays added in 3.1.5. Water wilds draw only their own Pokemon sprites, with no surf-sheet or palette dependency. Selectable Water sprite crop remains: OFF (default), 1 PX, 2 PX or 3 PX.
+
+Fixed Gen 1 water spawning: its imported native encounter tables store surf slots in the shared grass field. WildFollowers now falls back to that native table when a separate water table is absent. Explicit mod water tables retain precedence, including disabled tables. Gen 2 water handling stays unchanged.
+
+All walking land/water wilds cycle through their full four-frame walk sequence using step progress, rather than depending on a global animation timer that could skip poses during short steps. They return to standing when they land. Follower/idle animations retain their existing timing.
+
+Validation: all eleven games under Lua 5.3 and LuaJIT; selectable crop depths, G9/EE, four facings, moving/still frames, zoom and split OAM passes. Native surf loaders are intentionally unavailable in rendering tests to prove independence. Real Gen 1 runtime population creation, publishing and body drawing passes with native shared-table shape, plus complete short-step animation. Live graphical gameplay remains unverified.

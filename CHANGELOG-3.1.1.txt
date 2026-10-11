@@ -1,0 +1,3 @@
+WildFollowers 3.1.1
+Optimize and relax follower collision. Replay recorded player trails with cheap terrain checks, allowing NPC passage there. Let returning followers cross teammates while retaining distinct settled slots. Remove duplicate teammate scans from movement. Try direct approach steps before local routing. Bound all detour searches to 64 shared nodes per frame with fair per-follower allowances. Sort route directions once per search. Retry blocked rejoining at most five times per second.
+Validation: eleven-game native movement and runtime suites, five GBA native elevation tests, eleven-game connected-area tests. Controlled blocked six-follower benchmark: 26,832 -> 174 collision probes (99.4% fewer). Live-game FPS unmeasured.

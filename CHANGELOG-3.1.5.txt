@@ -1,0 +1,7 @@
+WildFollowers 3.1.5
+
+Native surfing artwork now appears underneath water wilds.
+Added Water sprite crop: OFF (default), 1 PX, 2 PX or 3 PX.
+Cropping removes visible bottom pixels, accounting for transparent padding and the G9/EE frame scale, without moving the Pokemon body. Native surf artwork follows the visible feet. Gen 3 uses its native surf blob and manifest/FRLG directional frames; Gen 1-2 use the native surf sprite's lower OAM row and native palette renderer. Gen 1 also retains native surf bob timing. Crystal draws the effect once in its bottom pass. Cropped water quads are cached. Land wilds, followers and existing settings remain compatible.
+
+Validated all crop depths, G9/EE sets, four facings, moving/still animation phases, three zoom levels, Crystal split passes, and land/follower exclusions across all eleven games under Lua 5.3 and LuaJIT. All 57,648 alpha-bound entries match the supplied PNGs. Existing EE sprite tests also pass. Live graphical gameplay remains unverified.

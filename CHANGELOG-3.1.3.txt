@@ -1,0 +1,10 @@
+WildFollowers 3.1.3
+
+Reworked idle animation cadence and sequencing across every menu choice.
+- Fixed idle jump height for fractional-spaced companions: middle followers visibly jump instead of only cycling their feet, in both G9 and EE.
+- Shared wave clock keeps six-member waves in procession order, regardless of when individual followers settled.
+- Spin Wave performs one turn then rests; Jump Wave performs one complete jump per member; Bounce Wave performs two separated jumps; Pulse Wave stretches once per cycle.
+- Look Around, Idle Walk, Dance and Stretch now include rest periods. Jump/Cheer, Doze, Copycat and bounded Wander retain distinct paced behavior.
+- Movement, menus, yielding, releases and live mode/delay changes clear stale poses; moving followers cannot retain an old idle animation.
+
+Validated every menu choice over repeated cycles in all eleven cartridges, six-member jump/bounce waves at 30/60/144Hz, actual fractional formation jumps, G9/EE render heights, movement interruption and setting changes. Native movement suites pass under Lua 5.3 and LuaJIT; runtime integration passes. Live graphical gameplay remains unverified.

@@ -1,0 +1,9 @@
+WildFollowers 3.1.7
+
+Fixed Gen 1 land Pokemon appearing in water. Water selection reads only the map water table, never a grass fallback. Missing or disabled surfing encounter tables produce no water wilds; ordinary land encounters retain their grass table.
+
+The 3.1.6 fix incorrectly treated Encounter.roll's grass parameter as the imported dataset format. OverworldController actually passes {grass=encDef.water} while surfing; generated datasets retain separate water and grass fields.
+
+Regression coverage reads the installed Red/Blue/Yellow imported datasets for every map, compares water selection with the native surfing caller, creates and draws actual Route 19 Tentacool populations, and rejects Nidoran populations on water with a grass-only table. Crop OFF/1/2/3 and walking animation are retained; surf mounts remain removed.
+
+Automated runtime tests cover all eleven games under Lua 5.3 and LuaJIT. Live graphical gameplay remains unverified.

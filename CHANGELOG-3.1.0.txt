@@ -1,0 +1,6 @@
+WildFollowers 3.1.0
+Independent Wild sprites and Follower sprites settings: G9 or EE. Existing G9 defaults retained.
+2,578 EE overworld sheets with all 1,025 base species, supported forms, shiny palettes and female variants. Runtime selection updates without replacing actors. Missing EE art falls back to G9.
+Native size, four directions, walking, idle poses, recall/release and Crystal split compositor retained.
+EE artwork credited to RHH pokeemerald-expansion 1.17.1 and its contributors.
+
