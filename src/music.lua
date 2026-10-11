@@ -27,10 +27,11 @@ return function(mod)
     local target=unit(math.sqrt(level)*3*gain)
     self.level=self.level+(target-self.level)*math.min(1,elapsed*12*self:speed())
     if self.beats and beats>self.beats and seq~=self.seq
-        and (not self.lastPulse or self.age-self.lastPulse>=.4/self:speed()) then
+        -- Waves overlap: animation speed must not discard incoming beats.
+        and (mod.options:get('music_effect')=='wave' or not self.lastPulse or self.age-self.lastPulse>=.4/self:speed()) then
       self.lastPulse=self.age
       self.events[#self.events+1]={time=self.age,strength=unit(math.max(.25,math.sqrt(bass)*4*gain))}
-      if #self.events>16 then table.remove(self.events,1)end
+      if #self.events>64 then table.remove(self.events,1)end
     end
     self.history[#self.history+1]={time=self.age,level=self.level}
     if #self.history>192 then table.remove(self.history,1)end

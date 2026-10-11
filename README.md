@@ -442,3 +442,7 @@ Followers can dance to PC output audio while idle. Run the included Windows help
 
 ## 3.4.1 — Visualizer effects and speed
 MUSIC EFFECT offers Dance, Wave Jumps, Bar Walk / Run and Bar Stretch. VISUALIZER SPEED ranges from 10% to 200%, with a calmer 50% default. All effects return to normal following when you walk.
+
+## 3.4.2 — Overlapping beat waves
+
+Wave Jumps accepts each detected beat independently of animation speed. Earlier waves keep moving down the line while new waves begin at the first follower.

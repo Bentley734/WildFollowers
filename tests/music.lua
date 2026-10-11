@@ -74,4 +74,21 @@ for _,speed in ipairs({.25,1})do
  duration[#duration+1]=active
 end
 check(duration[1]>duration[2]*3,'speed setting lengthens jump wave instead of only changing sprite frames')
+-- New beats enter the wave before the preceding wave reaches the tail.
+values.music_effect='wave';values.music_speed=.5
+local W=assert(load(read('music'),'overlapping waves','t',env))()(mod)
+packet(1,0);W:tick(.05);packet(2,1);W:tick(.05)
+for seq=3,7 do packet(seq,1);W:tick(.05)end
+packet(8,2);W:tick(.05)
+check(#W.events==2,'a second beat starts without waiting for the first wave to land')
+check(W.events[2].time-W.events[1].time<.4/W:speed(),'wave beats bypass animation cooldown')
+for seq=9,11 do packet(seq,2);W:tick(.05)end
+check(W:pose(0,'down').jumping,'head responds to the second beat')
+check(W:pose(3,'down').jumping,'first wave continues down the line while the second starts')
+values.music_speed=.1
+local Q=assert(load(read('music'),'dense slow waves','t',env))()(mod)
+packet(1,0);Q:tick(.05)
+for beat=1,30 do packet(beat+1,beat);Q:tick(.25)end
+check(#Q.events==30,'slow waves retain all detected beats until their tail finishes')
+check(Q:pose(5,'down').jumping,'tail remains animated with frequent beats at slow speed')
 print('PASS '..checks..' local music bridge, beat wave, idle interruption, silence and malformed/stale input checks')
