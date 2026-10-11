@@ -6,6 +6,9 @@ using NAudio.CoreAudioApi;
 sealed class Analyzer {
     public double Level, Bass;
     public long Beats;
+    public readonly long[] BeatCounts=new long[4];
+    readonly double[] lastOnset={-1,-1,-1,-1};
+    double previousBass, previousRms, rmsBaseline;
     double low, baseline, lastBeat = -1;
     public void Analyze(float[] samples, int rate, double now) {
         if (samples.Length == 0) return;
@@ -18,6 +21,20 @@ sealed class Analyzer {
         // Fast attack, slow release, plus an adaptive bass-onset threshold.
         Level=Math.Max(rms,Level*.8);Bass=Math.Max(brms,Bass*.8);
         if (brms>.0015 && brms>baseline*1.55+.0005 && now-lastBeat>.22) { Beats++;lastBeat=now; }
+        // Each sensitivity has its own onset counter. High settings also hear
+        // broadband drum attacks, without retriggering on a sustained loud mix.
+        for(int tier=0;tier<4;tier++) {
+            double gain=new[]{.5,1,2,4}[tier];
+            bool bassHit=brms>.0015/gain && brms>baseline*(1+.55/gain)+.0005/gain;
+            bool attack=brms-previousBass>Math.Max(.0001/gain,previousBass*.08/gain);
+            bool drumHit=tier>=2 && rms>.002/gain && rms>rmsBaseline*(1+.35/gain)+.0004/gain
+                && rms-previousRms>Math.Max(.0002/gain,previousRms*.12/gain);
+            double cooldown=tier>=2?.12:.22;
+            if(((bassHit && (tier<2 || attack)) || drumHit) && now-lastOnset[tier]>cooldown) {
+                BeatCounts[tier]++;lastOnset[tier]=now;
+            }
+        }
+        previousBass=brms;previousRms=rms;rmsBaseline=rmsBaseline*.94+rms*.06;
         baseline=baseline*.94+brms*.06;
     }
     public static void SelfTest(string report) {
@@ -31,7 +48,29 @@ sealed class Analyzer {
         double silent=a.Level;
         for(int block=0;block<100;block++)a.Analyze(new float[960],rate,5+block*.02);
         if(a.Level>.00001 || a.Level>=silent)throw new Exception("Silence must settle");
-        File.WriteAllText(report,"PASS adaptive bass beats, silence settling, finite signal; beats="+a.Beats);
+        // Quiet syncopated low and high drum attacks over a sustained guitar bed.
+        var dense=new Analyzer();
+        for(int block=0;block<400;block++) {
+            var samples=new float[960];
+            bool hit=block%17==0 || block%29==0;
+            for(int i=0;i<samples.Length;i++) {
+                double t=(block*960+i)/(double)rate;
+                samples[i]=(float)(.018*Math.Sin(2*Math.PI*700*t)
+                    +(hit?.004:0)*Math.Sin(2*Math.PI*110*t)
+                    +(hit?.007:0)*Math.Sin(2*Math.PI*2400*t));
+            }
+            dense.Analyze(samples,rate,block*.02);
+        }
+        if(dense.BeatCounts[3]<=dense.BeatCounts[1] || dense.BeatCounts[3]<15)
+            throw new Exception("Very High must detect quiet mixed drum attacks: "+string.Join(",",dense.BeatCounts));
+        var steady=new Analyzer();
+        for(int block=0;block<400;block++) {
+            var samples=new float[960];
+            for(int i=0;i<samples.Length;i++)samples[i]=(float)(.02*Math.Sin(2*Math.PI*100*(block*960+i)/rate));
+            steady.Analyze(samples,rate,block*.02);
+        }
+        if(steady.BeatCounts[3]>3)throw new Exception("Sustained sound must not invent beats");
+        File.WriteAllText(report,"Mixed quiet attacks by sensitivity="+string.Join(",",dense.BeatCounts)+"; steady="+steady.BeatCounts[3]+"; PASS adaptive bass beats, silence settling, finite signal; beats="+a.Beats);
     }
 }
 sealed class CaptureApp : ApplicationContext {
@@ -92,7 +131,7 @@ sealed class CaptureApp : ApplicationContext {
                 double level=clock.Elapsed.TotalSeconds-lastData>.25?0:analyzer.Level;
                 double bass=clock.Elapsed.TotalSeconds-lastData>.25?0:analyzer.Bass;
                 string state=paused?"paused":status;
-                payload=string.Format(CultureInfo.InvariantCulture,"WFMusic1 {0} {1} {2:F6} {3:F6} {4} {5}\n",++sequence,DateTimeOffset.UtcNow.ToUnixTimeSeconds(),level,bass,analyzer.Beats,state);
+                payload=string.Format(CultureInfo.InvariantCulture,"WFMusic2 {0} {1} {2:F6} {3:F6} {4} {5} {6} {7} {8}\n",++sequence,DateTimeOffset.UtcNow.ToUnixTimeSeconds(),level,bass,analyzer.BeatCounts[0],analyzer.BeatCounts[1],analyzer.BeatCounts[2],analyzer.BeatCounts[3],state);
             }
             string temp=output+".tmp";File.WriteAllText(temp,payload);File.Move(temp,output,true);
             tray.Text=paused?"WildFollowers Music — paused":"WildFollowers Music — "+status;

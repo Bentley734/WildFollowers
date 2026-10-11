@@ -101,4 +101,14 @@ for beat=1,9 do
  for rank=0,2 do check(S:pose(rank,'down').jumping==(rank==(beat-1)%3),'each beat jumps only its assigned follower')end
 end
 check(S.events[#S.events].rank==2,'rotation wraps using actual follower count')
+local D=assert(load(read('music'),'sensitivity counters','t',env))()(mod)
+values.music_sensitivity=1
+signal='WFMusic2 1 1000 0.02 0.02 0 0 0 0 ready';D:tick(.05)
+signal='WFMusic2 2 1000 0.02 0.02 0 0 1 1 ready';D:tick(.05)
+check(#D.events==0,'normal sensitivity ignores very-high-only onset')
+values.music_sensitivity=4
+signal='WFMusic2 3 1000 0.02 0.02 0 0 1 1 ready';D:tick(.05)
+check(#D.events==0,'changing sensitivity does not invent past beats')
+signal='WFMusic2 4 1000 0.02 0.02 0 0 1 2 ready';D:tick(.05)
+check(#D.events==1,'very high sensitivity receives its own quiet onset counter')
 print('PASS '..checks..' local music bridge, beat wave, idle interruption, silence and malformed/stale input checks')

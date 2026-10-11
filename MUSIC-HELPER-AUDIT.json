@@ -1,6 +1,6 @@
 {
   "file": "music/WildFollowersMusic.exe",
-  "sha256": "f3634e2bbea0100bfae0e9ea0de6b7ae92442a2470572c387be77971d4e57720",
+  "sha256": "83273212c677c24624d8929082a49844d4ac16d99b0f4a44f0e872a5209cede3",
   "platform": "Windows x64",
   "self_contained": true,
   "runtime": "Microsoft .NET 6.0.36",

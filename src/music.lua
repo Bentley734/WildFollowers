@@ -11,7 +11,17 @@ return function(mod)
     local ok,text=pcall(mod.read,mod,'music-signal.txt')
     local seq,stamp,level,bass,beats,state
     if ok and type(text)=='string' and #text<256 then
+      local low,normal,high,veryHigh
+      seq,stamp,level,bass,low,normal,high,veryHigh,state=text:match('^WFMusic2 (%d+) (%d+) ([%d%.]+) ([%d%.]+) (%d+) (%d+) (%d+) (%d+) ([%a]+)%s*$')
+      local gain=tonumber(mod.options:get('music_sensitivity')) or 1
+      local tier=gain>=4 and 4 or gain>=2 and 3 or gain<1 and 1 or 2
+      if seq then
+        beats=({low,normal,high,veryHigh})[tier]
+        if self.tier and self.tier~=tier then self.beats=nil end
+        self.tier=tier
+      else
       seq,stamp,level,bass,beats,state=text:match('^WFMusic1 (%d+) (%d+) ([%d%.]+) ([%d%.]+) (%d+) ([%a]+)%s*$')
+      end
     end
     seq,stamp,level,bass,beats=tonumber(seq),tonumber(stamp),tonumber(level),tonumber(bass),tonumber(beats)
     local now=os.time()

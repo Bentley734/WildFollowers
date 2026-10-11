@@ -450,3 +450,7 @@ Wave Jumps accepts each detected beat independently of animation speed. Earlier 
 ## 3.4.3 — Solo Beats
 
 Select SOLO BEATS under Music effect to give successive detected beats to successive followers. The rotation uses the current follower count; visualizer speed controls jump duration.
+
+## 3.4.4 — Audio detection sensitivity
+
+High and Very High now lower beat detection thresholds and include broadband drum transients. Restart the audio helper after updating to use the new detector.

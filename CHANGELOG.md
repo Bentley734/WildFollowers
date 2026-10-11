@@ -1,4 +1,6 @@
-## 3.4.3
+## 3.4.4
 
-- Add SOLO BEATS music effect: each detected beat goes to the next follower, rotating through the current party.
-- Individual jumps use the visualizer speed setting and can overlap independently.
+- Sensitivity now changes audio beat detection, rather than only animation strength.
+- High and Very High detect quieter bass hits and broadband drum attacks in dense mixes, with shorter onset cooldowns.
+- Separate sensitivity counters avoid replaying old beats when changing the option.
+- Update the bundled Windows audio helper; keep compatibility with older helpers.
