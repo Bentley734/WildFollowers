@@ -111,4 +111,46 @@ signal='WFMusic2 3 1000 0.02 0.02 0 0 1 1 ready';D:tick(.05)
 check(#D.events==0,'changing sensitivity does not invent past beats')
 signal='WFMusic2 4 1000 0.02 0.02 0 0 1 2 ready';D:tick(.05)
 check(#D.events==1,'very high sensitivity receives its own quiet onset counter')
+-- Game fallback uses the same effects, then yields to a recovered helper.
+local gameLevel,gameTime=.02,0
+local source={}
+local bridge={sample=function()gameTime=gameTime+.05;return gameLevel,source,gameTime end}
+local F=assert(load(read('music'),'game fallback','t',env))()(mod,function()return bridge end)
+signal=nil;values.music_effect='solo';F:tick(.05,3)
+check(F.input=='game' and F.state=='ready' and #F.events==1,'missing helper uses game audio onset')
+for i=1,5 do gameLevel=0;F:tick(.05,3)end
+gameLevel=.04;F:tick(.05,3)
+check(#F.events==2 and F.events[2].rank==1,'game audio drives independent beat rotation')
+packet(800,40);F:tick(.05,3)
+check(F.input=='helper' and #F.events==0,'recovered helper takes priority without inventing beats')
+packet(801,41);F:tick(.05,3)
+check(#F.events==1,'recovered helper resumes music effects')
+F:tick(.6,3);check(F.input=='game','frozen helper falls back to game music')
+bridge.sample=function()end;signal=nil;F:tick(.05,3)
+check(F.level==0 and #F.events==0,'silent or paused game audio rests')
+-- Queue observer follows playback time, ignores SFX, and restores hooks.
+local savedLove,savedChip,savedGba=love,package.loaded['src.core.ChipAudio'],package.loaded['src.core.game3.audio']
+local methods={queue=function()return true end,stop=function()end,
+ tell=function(s)return s.time end,isPlaying=function(s)return s.playing end,
+ getVolume=function(s)return s.volume end,getFreeBufferCount=function(s)return s.free end}
+local mt={__index=methods}
+local active
+love={audio={newQueueableSource=function()return setmetatable({time=0,playing=true,volume=1,free=7},mt)end}}
+package.loaded['src.core.ChipAudio']={currentSource=function()return active end}
+package.loaded['src.core.game3.audio']=nil
+local Q=assert(load(read('game_music'),'queue observer'))()(mod)
+local factory,queue=love.audio.newQueueableSource,methods.queue
+Q:install();active=love.audio.newQueueableSource(48000,16,2,8)
+local data={getSampleCount=function()return 4800 end,getSampleRate=function()return 48000 end,
+ getChannelCount=function()return 2 end,getSample=function(_,i)return i<2400 and .1 or .3 end}
+active:queue(data)
+check(math.abs(Q:sample()-.1)<.001,'fallback reads currently heard envelope')
+active.time=.07;check(math.abs(Q:sample()-.3)<.001,'envelope follows audio playback position')
+local sfx=love.audio.newQueueableSource(48000,16,2,8);sfx:queue(data)
+check(not Q.sources[sfx],'SFX buffers are ignored')
+active.volume=0;check(Q:sample()==nil,'muted music does not animate')
+active.volume=1;active.playing=false;check(Q:sample()==nil,'paused music does not animate')
+active:stop();check(not Q.sources[active],'stopping music clears old envelopes')
+Q:dispose();check(love.audio.newQueueableSource==factory and methods.queue==queue,'disposing restores audio hooks')
+love=savedLove;package.loaded['src.core.ChipAudio']=savedChip;package.loaded['src.core.game3.audio']=savedGba
 print('PASS '..checks..' local music bridge, beat wave, idle interruption, silence and malformed/stale input checks')

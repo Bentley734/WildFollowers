@@ -454,3 +454,5 @@ Select SOLO BEATS under Music effect to give successive detected beats to succes
 ## 3.4.4 — Audio detection sensitivity
 
 High and Very High now lower beat detection thresholds and include broadband drum transients. Restart the audio helper after updating to use the new detector.
+
+Game music fallback: if the helper is unavailable, the visualizer analyzes the game’s streamed BGM locally. A recovered helper automatically takes priority. Explicitly pausing the helper still pauses the visualizer. No audio is recorded.

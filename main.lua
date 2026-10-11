@@ -9,14 +9,15 @@ return function(mod)
   end
   local schema=assert(load(assert(mod:read('options.lua'))))()
   mod.options:define(schema)
+  include('game_music'):install()
   local controller=include('controller')
   include('menu'):install(controller,schema)
-  mod.exports.version='3.4.4'
+  mod.exports.version='3.4.5'
   mod.exports.numbering='national'
   mod.exports.supportedGames={'red','blue','yellow','gold','silver','crystal','ruby','sapphire','firered','leafgreen','emerald'}
   mod.exports.status=function() return controller:status() end
   mod.exports.clearAll=function() controller:clear() end
-  mod.exports.dispose=function() controller:dispose() end
+  mod.exports.dispose=function() controller:dispose();include('game_music'):dispose() end
   include('voxel'):install()
   mod.events:on('mods.loaded',function() include('voxel'):install() end)
   mod.hooks:wrap('input.step',function(next_,game,dt)

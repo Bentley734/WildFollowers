@@ -1,6 +1,6 @@
-## 3.4.4
+## 3.4.5
 
-- Sensitivity now changes audio beat detection, rather than only animation strength.
-- High and Very High detect quieter bass hits and broadband drum attacks in dense mixes, with shorter onset cooldowns.
-- Separate sensitivity counters avoid replaying old beats when changing the option.
-- Update the bundled Windows audio helper; keep compatibility with older helpers.
+- Automatically use the game music when the PC audio helper is missing, stopped, stale or unavailable.
+- Analyze the game BGM buffers at playback position; all music effects and sensitivity settings remain available.
+- Return to PC audio when the helper recovers. Pausing the helper explicitly still pauses the visualizer.
+- Ignore sound effects and muted or paused game music; release audio hooks when the mod is disposed.

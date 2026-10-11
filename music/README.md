@@ -1,6 +1,6 @@
 # Music Visualizer — Windows
 
-1. Restart the game after installing WildFollowers 3.4.4.
+1. Restart the game after installing WildFollowers 3.4.5.
 2. Run `music/WildFollowersMusic.exe` from the extracted WildFollowers mod folder. The helper runs in the notification area; right-click its icon to pause/resume or exit. It is self-contained and requires no separate .NET installation.
 3. In WILDFOLLOWERS, set IDLE BEHAVIOR to MUSIC VISUALIZER. IDLE TIME determines how long you must stand still first; MUSIC SENSITIVITY offers LOW, NORMAL, HIGH and VERY HIGH.
 4. Choose MUSIC EFFECT: DANCE, WAVE JUMPS, BAR WALK / RUN, or BAR STRETCH. VISUALIZER SPEED offers 10%–200%, defaulting to 50%; try 10% or 25% for a slow response. Speed controls animation, wave timing and bar response; MUSIC SENSITIVITY controls strength. Bar movement changes only the rendered body position, preserving the follower's place in line.
@@ -23,3 +23,5 @@ Source is in `helper/`. Install a Windows .NET SDK capable of targeting .NET 6, 
 The Lua bridge reads at most 20 times per second, treats input as data, rejects malformed/stale messages, caps animation strength, and detects a frozen helper within roughly half a second. It never loads or executes the signal file.
 
 Sensitivity now selects a detector in the helper, as well as animation strength. High and Very High lower the onset threshold and include broadband drum attacks. The mod remains compatible with the earlier WFMusic1 helper protocol.
+
+Game music fallback: if the helper is unavailable, the visualizer analyzes the game’s streamed BGM locally. A recovered helper automatically takes priority. Explicitly pausing the helper still pauses the visualizer. No audio is recorded.

@@ -1,7 +1,34 @@
 -- Data-only local bridge. Audio never enters the mod or its save files.
-return function(mod)
+return function(mod,include)
+  local GameMusic=include and include('game_music')
   local M={state='not running',level=0,events={},history={},age=0,poll=0}
   local function unit(v)return math.max(0,math.min(1,v))end
+  function M:fallback()
+    local rms,source,time
+    if GameMusic then rms,source,time=GameMusic:sample()end
+    if not rms then
+      self.state='not running';self.level=0;self.events={};self.history={};self.gameSource=nil;return
+    end
+    if self.input~='game' or self.gameSource~=source or time<(self.gameTime or 0) then
+      self.events={};self.history={};self.lastPulse=nil;self.baseline=0;self.previous=0
+    end
+    self.input='game';self.gameSource=source;self.gameTime=time;self.state='ready'
+    local gain=math.max(.5,math.min(4,tonumber(mod.options:get('music_sensitivity')) or 1))
+    self.level=self.level+(unit(math.sqrt(rms)*3*gain)-self.level)*math.min(1,.6*self:speed())
+    local baseline,previous=self.baseline or 0,self.previous or 0
+    local cooldown=gain>=2 and .12 or .22
+    if rms>.0015/gain and rms>baseline*(1+.55/gain)+.0005/gain
+        and rms-previous>math.max(.0001/gain,previous*.08/gain)
+        and (not self.lastPulse or self.age-self.lastPulse>cooldown)then
+      self.lastPulse=self.age
+      local turn=self.turn or 0;self.turn=(turn+1)%self.count
+      self.events[#self.events+1]={rank=turn%self.count,time=self.age,strength=unit(math.max(.25,math.sqrt(rms)*4*gain))}
+      if #self.events>64 then table.remove(self.events,1)end
+    end
+    self.previous=rms;self.baseline=baseline*.94+rms*.06
+    self.history[#self.history+1]={time=self.age,level=self.level}
+    if #self.history>192 then table.remove(self.history,1)end
+  end
   function M:tick(dt,count)
     self.count=math.max(1,math.min(6,count or self.count or 6))
     self.age=self.age+dt;self.poll=self.poll+dt
@@ -27,12 +54,14 @@ return function(mod)
     local now=os.time()
     local valid=seq and stamp and level and bass and beats and seq<=9007199254740991 and beats<=9007199254740991 and level<=1 and bass<=1
       and stamp<=now+1 and now-stamp<=2
+    if valid and state=='paused' then self.state='paused';self.level=0;self.events={};self.history={};return end
     if not valid or state~='ready' then
-      self.state=valid and state or 'not running';self.level=0;self.events={};self.history={};self.lastPulse=nil;self.seq=nil;self.beats=nil;return
+      self.seq=nil;self.beats=nil;self:fallback();return
     end
     if seq~=self.seq then self.unchanged=0 else self.unchanged=(self.unchanged or 0)+elapsed end
-    if (self.unchanged or 0)>.5 then self.state='not running';self.level=0;self.events={};self.history={};return end
-    self.state='ready'
+    if (self.unchanged or 0)>.5 then self:fallback();return end
+    if self.input~='helper' then self.events={};self.history={};self.lastPulse=nil;self.beats=nil end
+    self.input='helper';self.state='ready'
     if self.beats and (beats<self.beats or seq<(self.seq or seq)) then self.events={};self.history={};self.lastPulse=nil end
     local gain=math.max(.5,math.min(4,tonumber(mod.options:get('music_sensitivity')) or 1))
     local target=unit(math.sqrt(level)*3*gain)
