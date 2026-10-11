@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <AssemblyName>WildFollowersMusic</AssemblyName><PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained><RuntimeIdentifier>win-x64</RuntimeIdentifier><IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>none</DebugType><EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+  <ItemGroup><PackageReference Include="NAudio.Wasapi" Version="2.4.0" /></ItemGroup>
+</Project>

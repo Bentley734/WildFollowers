@@ -100,6 +100,7 @@ return function(mod,include)
     local walking=actor.moving and not actor.spacingPaused
     local speed=march and not walking and math.max(.1,math.min(3,tonumber(mod.options:get(actor.follower and 'followers_march_speed' or 'wilds_march_speed')) or 1)) or 1
     local pose=actor.idlePose
+    if not walking and pose and pose.music then return pose.frame or 0 end
     local frame=(walking or march) and math.floor((actor.clock or 0)*8*speed)%4 or (pose and pose.frame or 0)
     -- Moving wilds keep their complete step cycle; march speed controls their
     -- standing animation without changing walking speed or movement progress.

@@ -631,7 +631,7 @@ return function(mod,include)
     return false
   end
   function C:status()
-    local out={version=mod.exports.version,numbering='national',game=A.version,generation=A.generation,actors={},followers={},pathStep=T.index}
+    local out={version=mod.exports.version,music=include('music').state,numbering='national',game=A.version,generation=A.generation,actors={},followers={},pathStep=T.index}
     for _,e in ipairs(self.wilds) do out.actors[#out.actors+1]={national=e.national,species=e.species,level=e.level,x=e.cellX,y=e.cellY,
       kind=e.surface,sourceMap=e.sourceMap,current=e.currentEligible,preview=e.previewEligible,retired=e.retired,
       behavior=e.ecology and e.ecology.mode or 'wander'} end

@@ -95,6 +95,13 @@ for gen=1,3 do
    end
   end
  end
+ -- Music idle frames override standing march in both compositors.
+ values.followers_march=true;values.followers_march_speed=.1
+ local dancing={national=1,follower=true,px=100,py=200,clock=0,facing='down',idlePose={music=true,frame=2,sx=1,sy=1}}
+ S:draw(dancing,0,0,1);check(drawn==2,'music frame overrides standing march in 2D')
+ local musicSprite=V:pose(dancing);check(musicSprite.def._wildFollowers.frame==2,'music frame overrides standing march in native pose')
+ dancing.moving=true;dancing.clock=.13
+ check(S:frame(dancing)==1,'walking interrupts music frames as well as march speed')
  -- Independent speed multipliers must match in 2D and native/3D poses.
  for _,follower in ipairs({true,false})do
   local key=follower and 'followers_march' or 'wilds_march'

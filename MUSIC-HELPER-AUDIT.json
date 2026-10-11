@@ -1,0 +1,14 @@
+{
+  "file": "music/WildFollowersMusic.exe",
+  "sha256": "f3634e2bbea0100bfae0e9ea0de6b7ae92442a2470572c387be77971d4e57720",
+  "platform": "Windows x64",
+  "self_contained": true,
+  "runtime": "Microsoft .NET 6.0.36",
+  "dependencies": {
+    "NAudio.Wasapi": "2.4.0",
+    "NAudio.Core": "2.4.0"
+  },
+  "source": "music/helper",
+  "capture": "default multimedia output, WASAPI loopback",
+  "output": "music-signal.txt, scalar values only"
+}

@@ -2,6 +2,7 @@
 return function(mod,include)
   local A,Y,T=include('adapter'),include('avoidance'),include('trail')
   local J=include('jumps')
+  local Music=include('music')
   local I={}
   local faces={'down','left','up','right'}
   local modes={'look','jump','wave','spin','bounce','pulse','stretch','doze','cheer','copycat','dance'}
@@ -14,6 +15,7 @@ return function(mod,include)
   function I:tick(c,e,dt)
     local p=A:player()
     local selected=mod.options:get('OW_FOLLOWERS_IDLE_MODE') or 'none'
+    if selected=='music' and c.followers and e==c.followers[1] then Music:tick(dt) end
     local delay=math.max(0,tonumber(mod.options:get('OW_FOLLOWERS_IDLE_TIME')) or 3)
     if self.owner~=c or self.epoch~=T.points or self.selection~=selected or self.delay~=delay or p.moving or A:busy() then
       self.owner=c
@@ -61,7 +63,9 @@ return function(mod,include)
         pose.jumping=true;pose.frame=1
       end
     end
-    if mode=='look' then
+    if mode=='music' then
+      pose=Music:pose(rank,e.facing)
+    elseif mode=='look' then
       local at=t%5
       if at<.9 then pose.facing=faces[(rank+1)%4+1]
       elseif at<1.8 then pose.facing=faces[(rank+3)%4+1] end

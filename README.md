@@ -434,3 +434,7 @@ Both march speed settings now include 10%, 20%, 25%, and 33% for slower animatio
 
 ## 3.3.9
 March speed applies while stationary. Walking always uses normal walking animation.
+
+
+## 3.4.0 — Music Visualizer
+Followers can dance to PC output audio while idle. Run the included Windows helper, select MUSIC VISUALIZER under IDLE BEHAVIOR, and adjust MUSIC SENSITIVITY. See [music/README.md](music/README.md) for setup, controls and local audio handling.
