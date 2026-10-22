@@ -6,9 +6,9 @@ return function(mod,events,actor,values,gen,root,check,eq)
   if gen>2 then return end -- Terrarium also supplies a Gen 2 bridge
   local function read(path) local f=assert(io.open(path,'rb'));local s=f:read('*a');f:close();return s end
   local peers={
-    TERRARIUM=root..'/../.work/voxel-reference/TERRARIUM-1.30.1/TERRARIUM',
+    TERRARIUM=(arg[4] and arg[4]~='' and arg[4] or root..'/../.work/voxel-reference')..'/TERRARIUM-1.30.1/TERRARIUM',
   }
-  if gen==1 then peers.BATTLE_ART_VOXEL_FORK=root..'/../.work/voxel-reference/BATTLE_ART_VOXEL_FORK-1.11.1' end
+  if gen==1 then peers.BATTLE_ART_VOXEL_FORK=(arg[4] and arg[4]~='' and arg[4] or root..'/../.work/voxel-reference')..'/BATTLE_ART_VOXEL_FORK-1.11.1' end
   local oldFind=mod.find
   function mod:find(id)
     if peers[id] and self.game.mods.exports[id] then return {exports=self.game.mods.exports[id]} end

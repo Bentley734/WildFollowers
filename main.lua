@@ -12,7 +12,7 @@ return function(mod)
   include('game_music'):install()
   local controller=include('controller')
   include('menu'):install(controller,schema)
-  mod.exports.version='3.4.5'
+  mod.exports.version='3.4.6'
   mod.exports.numbering='national'
   mod.exports.supportedGames={'red','blue','yellow','gold','silver','crystal','ruby','sapphire','firered','leafgreen','emerald'}
   mod.exports.status=function() return controller:status() end

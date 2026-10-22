@@ -6,10 +6,12 @@ local P=require('src.core.game3.pokemon');P._names={[25]='PIKACHU'}
 local originalShiny,originalGender=P.isShiny,P.gender
 P.isShiny=function(m)return m.shiny==true end;P.gender=function(_,pid)return pid==1 and 'F' or 'M' end
 local catalog=assert(loadfile(root..'/src/ee_data.lua'))()(mod)
-local S=assert(loadfile(root..'/src/sprites.lua'))()(mod,function(n)
- if n=='ee_data' then return catalog end
- return {pose=function()return 0 end,shadow=function()end}
-end)
+local modules={ee_data=catalog,jumps={pose=function()return 0 end,shadow=function()end}}
+local function include(n)
+ if not modules[n] then modules[n]=assert(loadfile(root..'/src/'..n..'.lua'))()(mod,include) end
+ return modules[n]
+end
+local S=include('sprites')
 local checks=0
 local function check(v,m)checks=checks+1;assert(v,version..': '..m)end
 local f={national=25,species=V.generation()==3 and 25 or 'PIKACHU',follower=true,mon={species=25,shiny=true,gender='female',personality=1},px=16,py=32,facing='right'}

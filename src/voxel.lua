@@ -16,8 +16,8 @@ return function(mod,include)
     end
     local pose=actor.idlePose
     local facing=pose and pose.facing or actor.facing or 'down'
-    local frame=S:frame(actor)
-    local size=r.ee and 1 or 32/r.w
+    local frame=S:frame(actor,r,facing)
+    local size=r.scale
     local water=actor.surface=='water' and not actor.follower
     local crop=water and math.max(0,math.min(3,math.floor(tonumber(mod.options:get('water_sprite_crop')) or 0))) or 0
     local bottom=water and r.bottoms and r.bottoms[(rows[facing] or 0)+1][frame+1] or r.h
@@ -36,7 +36,7 @@ return function(mod,include)
       retained=retained,sx=sx,sy=sy,jump=J:pose(actor)}
     -- SpriteRenderer-compatible metadata; our own 2D draw remains in charge.
     sprite.frameWidth=r.w*size;sprite.frameHeight=r.h*size
-    sprite.anchorX=sprite.frameWidth/2;sprite.anchorY=sprite.frameHeight
+    sprite.anchorX=r.anchorX*size;sprite.anchorY=r.anchorY*size
     def.frameWidth,def.frameHeight=sprite.frameWidth,sprite.frameHeight
     def.anchorX,def.anchorY=sprite.anchorX,sprite.anchorY
     local offset=pose and (not actor.moving or actor.spacingPaused) and (pose.offsetY or 0) or 0
@@ -69,10 +69,11 @@ return function(mod,include)
               local fx,fy=d.frame*r.w,d.row*r.h
               local u0,u1=(fx+.02)/iw,(fx+r.w-.02)/iw
               local v0,v1=(fy+.05)/ih,(fy+d.retained-.05)/ih
-              local x0,x1=8-r.w*d.size*d.sx/2,8+r.w*d.size*d.sx/2
+              local x0=8-r.anchorX*d.size*d.sx
+              local x1=8+(r.w-r.anchorX)*d.size*d.sx
               -- Native voxel cards pivot at py+8; GB bodies end at py+12.
-              local y0=(r.h-d.retained)*d.size*d.sy-4-d.jump
-              local y1=r.h*d.size*d.sy-4-d.jump
+              local y0=(r.anchorY-d.retained)*d.size*d.sy-4-d.jump
+              local y1=r.anchorY*d.size*d.sy-4-d.jump
               local vertices={{x0,y0,0,u0,v1,1},{x1,y0,0,u1,v1,1},
                 {x1,y1,0,u1,v0,1},{x0,y1,0,u0,v0,1}}
               local indices={};gpu.pushQuad(indices,0);mesh=gpu.newMesh(vertices,indices)

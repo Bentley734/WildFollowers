@@ -1,5 +1,14 @@
 # Third-Party Notices
 
+## Pokemon Companion / Red Rescue Team walking sprites
+
+The optional `assets/companion/` source contains normalized walking sprites from
+the user-supplied Pokemon Companion FireRed v0.1.2 archive by TheOriginalDrJ.
+Its documented source is Pokemon Mystery Dungeon: Red Rescue Team. Original art,
+palettes, animation timing, offsets, and ground anchors are preserved. See
+`COMPANION-OVERWORLD-CREDITS.md` and `COMPANION-OVERWORLD-AUDIT.json` for provenance
+and applicable source-license information. No new artwork ownership is claimed.
+
 The generated sheets in `assets/followsprites/` are derived from third-party
 Pokemon follower/overworld artwork gathered by the earlier Wilds project.
 They remain under the rights and licensing terms of their original authors

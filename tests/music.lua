@@ -1,4 +1,5 @@
 local root=arg[1]
+require('src.core.GameVersion').set(arg[2] or 'red')
 local checks=0
 local function check(v,m)checks=checks+1;assert(v,m)end
 local function read(n)local f=assert(io.open(root..'/src/'..n..'.lua'));local s=f:read('*a');f:close();return s end
@@ -137,10 +138,14 @@ local mt={__index=methods}
 local active
 love={audio={newQueueableSource=function()return setmetatable({time=0,playing=true,volume=1,free=7},mt)end}}
 package.loaded['src.core.ChipAudio']={currentSource=function()return active end}
-package.loaded['src.core.game3.audio']=nil
-local Q=assert(load(read('game_music'),'queue observer'))()(mod)
+local gbaAudio={}
+package.loaded['src.core.game3.audio']=gbaAudio
+local Sandbox=require('src.mods.Sandbox')
+local queueEnv=Sandbox.envFor({modId='wildfollowers',permissions={engine_internals=true}})
+local Q=assert(Sandbox.compile(read('game_music'),'queue observer',queueEnv))()(mod)
 local factory,queue=love.audio.newQueueableSource,methods.queue
 Q:install();active=love.audio.newQueueableSource(48000,16,2,8)
+gbaAudio._bgmSource=active
 local data={getSampleCount=function()return 4800 end,getSampleRate=function()return 48000 end,
  getChannelCount=function()return 2 end,getSample=function(_,i)return i<2400 and .1 or .3 end}
 active:queue(data)

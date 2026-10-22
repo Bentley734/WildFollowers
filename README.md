@@ -1,3 +1,36 @@
+# WildFollowers 3.4.6 â€” Companion overworld sprites
+
+Adds the walking sprites from Pokemon Companion FireRed v0.1.2 as an optional
+art style. Built from the latest GitHub source and release, WildFollowers 3.4.5
+(`abda2022`), checked on October 21, 2026.
+
+In **Options â†’ WILDFOLLOWERS**, set **FOLLOWER SPRITES** and/or **WILD SPRITES**
+to **COMPANION**. These choices are independent and can be changed while playing.
+Existing G9 and EE selections and defaults are preserved.
+
+- 420 sprite sets cover all 386 Gen 1â€“3 species, Munchlax, and the included
+  Unown, Deoxys, and Castform forms across all eleven supported games.
+- Original pixels, palettes, offsets, ground anchors, and complete walking
+  sequences are retained, including animations longer than four frames.
+- Native Unown follows its personality/DV letter. Native Deoxys uses Attack in
+  FireRed, Defense in LeafGreen, Speed in Emerald, and Normal in Ruby/Sapphire.
+  Explicit form species retain their selected form.
+- Missing species use existing G9 artwork; unsupported alternate forms first
+  try the existing exact-form art. Companion supplies normal PMD colors, so this
+  style uses those same original colors for shiny and female Pokemon.
+- Water cropping, Crystal's split rendering, idle effects, recall/release, and
+  the existing voxel bridge share the same imported sprite geometry.
+- The game-music fallback now uses permitted engine imports, fixing an error
+  caused by newer G1R sandboxes hiding the global module registry.
+
+Import `WildFollowers-v3.4.6.zip`, replacing the previous WildFollowers install,
+then restart G1R. Requires G1R >=0.3.54 and <0.4.0. The separate Pokemon Companion
+mod is not required. Only its artwork is imported; its following, dialogue, gifts,
+and save code are not included. See [artwork credits](COMPANION-OVERWORLD-CREDITS.md)
+and [validation](VALIDATION-3.4.6.md).
+
+---
+
 # WildFollowers 3.3.0 â€” Ledges and livelier ecosystems
 
 Based on the latest GitHub release, 3.2.0, retrieved and compared byte-for-byte on October 9, 2026.
@@ -425,7 +458,7 @@ Smoother smart catch-up, safe partial movement at sprite boundaries, leaders adv
 
 
 ## 3.3.7
-Separate FOLLOWERS MARCH SPEED and WILDS MARCH SPEED choices offer 50%–300%, defaulting to 100%. Restart after updating.
+Separate FOLLOWERS MARCH SPEED and WILDS MARCH SPEED choices offer 50%â€“300%, defaulting to 100%. Restart after updating.
 
 
 ## 3.3.8
@@ -436,23 +469,23 @@ Both march speed settings now include 10%, 20%, 25%, and 33% for slower animatio
 March speed applies while stationary. Walking always uses normal walking animation.
 
 
-## 3.4.0 — Music Visualizer
+## 3.4.0 â€” Music Visualizer
 Followers can dance to PC output audio while idle. Run the included Windows helper, select MUSIC VISUALIZER under IDLE BEHAVIOR, and adjust MUSIC SENSITIVITY. See [music/README.md](music/README.md) for setup, controls and local audio handling.
 
 
-## 3.4.1 — Visualizer effects and speed
+## 3.4.1 â€” Visualizer effects and speed
 MUSIC EFFECT offers Dance, Wave Jumps, Bar Walk / Run and Bar Stretch. VISUALIZER SPEED ranges from 10% to 200%, with a calmer 50% default. All effects return to normal following when you walk.
 
-## 3.4.2 — Overlapping beat waves
+## 3.4.2 â€” Overlapping beat waves
 
 Wave Jumps accepts each detected beat independently of animation speed. Earlier waves keep moving down the line while new waves begin at the first follower.
 
-## 3.4.3 — Solo Beats
+## 3.4.3 â€” Solo Beats
 
 Select SOLO BEATS under Music effect to give successive detected beats to successive followers. The rotation uses the current follower count; visualizer speed controls jump duration.
 
-## 3.4.4 — Audio detection sensitivity
+## 3.4.4 â€” Audio detection sensitivity
 
 High and Very High now lower beat detection thresholds and include broadband drum transients. Restart the audio helper after updating to use the new detector.
 
-Game music fallback: if the helper is unavailable, the visualizer analyzes the game’s streamed BGM locally. A recovered helper automatically takes priority. Explicitly pausing the helper still pauses the visualizer. No audio is recorded.
+Game music fallback: if the helper is unavailable, the visualizer analyzes the gameâ€™s streamed BGM locally. A recovered helper automatically takes priority. Explicitly pausing the helper still pauses the visualizer. No audio is recorded.

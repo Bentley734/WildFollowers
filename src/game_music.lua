@@ -1,10 +1,18 @@
 -- Observe queued BGM envelopes only; playback and PCM remain untouched.
 return function(mod)
   local G={capacities=setmetatable({},{__mode='k'}),sources=setmetatable({},{__mode='k'}),hooks={}}
+  local audio
   local function current()
-    local a=package.loaded['src.core.game3.audio']
+    -- The mod sandbox exposes permitted engine imports, not package.loaded.
+    -- Resolve only this game's audio backend and keep its live module table.
+    if not audio then
+      local name=require('src.core.GameVersion').generation()==3
+        and 'src.core.game3.audio' or 'src.core.ChipAudio'
+      local ok,result=pcall(require,name)
+      if ok and type(result)=='table' then audio=result end
+    end
+    local a=audio
     if a and a._bgmSource then return a._bgmSource end
-    a=package.loaded['src.core.ChipAudio']
     if a and a.currentSource then local ok,s=pcall(a.currentSource);if ok then return s end end
   end
   function G:queued(source,data)

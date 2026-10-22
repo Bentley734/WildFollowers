@@ -46,7 +46,7 @@ if gen==1 then game.stack.states={world}end
 function game.stack:top()return self.states[#self.states]end
 function world:busy()return menu end
 function world:interact()return false end
-local effects={collectActors=function()end,tallGrassAt=function()end,leaveTallGrass=function()end}
+local effects={collectActors=function()end,tallGrassAt=function()end,leaveTallGrass=function()end,rse=function()return false end}
 local field={running=true,isLocked=function()return menu end,interact=function()end,
   locked=false,tryCoordEvents=function()end}
 local function no()return false end
@@ -132,7 +132,9 @@ end
 local function frames()return player.stepFramesCur or player.stepFrames or 16 end
 local function start(dir,run)
   local result
-  for _=1,8 do
+  -- Current GBA avatars spend eight frames turning before the next movement
+  -- input can commit. Leave room for that real turn and its following poll.
+  for _=1,16 do
     result=gen==3 and player.tryMove(dir,game,run)or player:tryMove(dir,map,world.entities)
     if player.moving then break end
     advance(1)

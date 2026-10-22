@@ -1,4 +1,5 @@
 local root,version=arg[1],arg[2]
+local unpack=table.unpack or unpack
 love=require('tests.love_stub')
 require('src.core.GameVersion').set(version)
 local checks=0

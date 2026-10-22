@@ -4,20 +4,24 @@ return function(mod,include)
   local visibleBounds=include('sprite_bounds')
   local S={cache={}}
   local EE=include('ee_data')
+  local Companion=include('companion_data')
   local Forms=include('forms')
   local rows={down=0,left=1,right=2,up=3}
+  local V=require('src.core.GameVersion')
   -- Native GB feet end at cell Y + 12; GBA feet end at cell Y + 16.
-  local footY=require('src.core.GameVersion').generation()==3 and 16 or 12
+  local footY=V.generation()==3 and 16 or 12
   function S:get(national,actor)
-    local form
-    if actor then form=Forms:resolve(actor.species) end
+    local form,formName
+    if actor then form,formName=Forms:resolve(actor.species) end
     if form then national=form.national end
     if type(national)~='number' or national%1~=0 or national<1 or national>1025 then return nil end
     local paths,seen={},{}
     local function add(path)
       if path and not seen[path] then paths[#paths+1]=path;seen[path]=true end
     end
-    local useEE=actor and mod.options:get(actor.follower and 'follower_sprites' or 'wild_sprites')=='ee'
+    local source=actor and mod.options:get(actor.follower and 'follower_sprites' or 'wild_sprites')
+    local useEE=source=='ee'
+    local useCompanion=source=='companion'
     local shiny,female=false,false
     if actor then
       local mon=actor.mon
@@ -34,6 +38,29 @@ return function(mod,include)
       if shiny then add(art.shiny) end
       if female then add(art.female) end
       add(art.normal)
+    end
+    -- Companion supplies original PMD palettes, not shiny recolors. Prefer an
+    -- exact form; unsupported forms keep the existing form-aware fallback.
+    if useCompanion then
+      local name=formName
+      if national==201 and not Companion.forms[name] and actor.mon then
+        local index
+        if V.generation()==3 then
+          index=require('src.core.game3.pokemon').unownLetter(actor.mon.personality)+1
+        else
+          local U=require('src.core.gen2.Unown')
+          index=U.index(actor.mon.unownLetter) or U.letterFromDVs(actor.mon.dvs)
+        end
+        if index and index>=1 and index<=28 then
+          name='UNOWN_'..(index==27 and 'EMARK' or index==28 and 'QMARK' or string.char(64+index))
+        end
+      elseif national==386 and name=='DEOXYS' then
+        local version=V.get()
+        name='DEOXYS_'..(version=='firered' and 'ATTACK' or version=='leafgreen' and 'DEFENSE'
+          or version=='emerald' and 'SPEED' or 'NORMAL')
+      end
+      add(Companion.forms[name])
+      if not form then add(Companion.national[national]) end
     end
     if form then
       variants(useEE and form.ee or form.g9)
@@ -59,6 +86,7 @@ return function(mod,include)
   function S:load(path)
     if self.cache[path]~=nil then return self.cache[path] or nil end
     local ee=path:find('assets/ee/',1,true)~=nil
+    local companion=Companion.sheets[path]
     local ok,img=pcall(mod.assets.image,mod.assets,path)
     if not ok or not img then
       self.cache[path]=false
@@ -66,14 +94,20 @@ return function(mod,include)
     end
     img:setFilter('nearest','nearest')
     local w,h=img:getDimensions()
-    if w%4~=0 or h%4~=0 then
+    local columns=companion and companion.columns or 4
+    if w%columns~=0 or h%4~=0 then
       self.cache[path]=false
       return nil
     end
-    local record={path=path,image=img,w=w/4,h=h/4,quads={},ee=ee,bottoms=waterBounds[path]}
+    local record={path=path,image=img,w=w/columns,h=h/4,quads={},ee=ee,
+      companion=companion~=nil,columns=columns,durations=companion and companion.durations,
+      bottoms=waterBounds[path]}
+    record.scale=(ee or companion) and 1 or 32/record.w
+    record.anchorX=companion and companion.anchorX or record.w/2
+    record.anchorY=companion and companion.anchorY or record.h
     for facing,row in pairs(rows) do
       record.quads[facing]={}
-      for frame=0,3 do
+      for frame=0,columns-1 do
         record.quads[facing][frame]=love.graphics.newQuad(frame*record.w,row*record.h,record.w,record.h,w,h)
       end
     end
@@ -85,9 +119,9 @@ return function(mod,include)
     if not r then return {left=8,right=8,top=16,bottom=0} end
     local bounds=visibleBounds[r.path]
     local b=bounds and (bounds[actor.facing or 'down'] or bounds) or {0,0,r.w,r.h}
-    local size=r.ee and 1 or 32/r.w
-    return {left=math.max(0,(r.w/2-b[1])*size),right=math.max(0,(b[3]-r.w/2)*size),
-      top=math.max(0,(r.h-b[2])*size),bottom=(b[4]-r.h)*size}
+    local size=r.scale
+    return {left=math.max(0,(r.anchorX-b[1])*size),right=math.max(0,(b[3]-r.anchorX)*size),
+      top=math.max(0,(r.anchorY-b[2])*size),bottom=(b[4]-r.anchorY)*size}
   end
   function S:box(actor,x,y)
     local b=self:extent(actor)
@@ -95,11 +129,29 @@ return function(mod,include)
     x=(x or actor.px)+8;y=(y or actor.py)+footY
     return {x-b.left*sx,y-b.top*sy,x+b.right*sx,y+b.bottom*sy}
   end
-  function S:frame(actor)
+  function S:frame(actor,record,facing)
     local march=mod.options:get(actor.follower and 'followers_march' or 'wilds_march')==true
     local walking=actor.moving and not actor.spacingPaused
     local speed=march and not walking and math.max(.1,math.min(3,tonumber(mod.options:get(actor.follower and 'followers_march_speed' or 'wilds_march_speed')) or 1)) or 1
     local pose=actor.idlePose
+    if record and record.companion then
+      local durations=record.durations[facing or actor.facing or 'down']
+      if not walking and (not march or (pose and pose.music)) then
+        return (pose and pose.frame or 0)%#durations
+      end
+      local total=0
+      for _,duration in ipairs(durations)do total=total+duration end
+      local time=(actor.clock or 0)*speed
+      if not actor.follower and walking and actor.progress~=nil then
+        time=math.max(0,math.min(1,actor.progress))*total
+      end
+      time=time%total
+      for frame,duration in ipairs(durations)do
+        if time<duration then return frame-1 end
+        time=time-duration
+      end
+      return 0
+    end
     if not walking and pose and pose.music then return pose.frame or 0 end
     local frame=(walking or march) and math.floor((actor.clock or 0)*8*speed)%4 or (pose and pose.frame or 0)
     -- Moving wilds keep their complete step cycle; march speed controls their
@@ -112,14 +164,14 @@ return function(mod,include)
   function S:draw(actor,ox,oy,scale,oamRow)
     local r=self:get(actor.national,actor);if not r or actor.hidden then return end
     local G=love.graphics;scale=scale or 1
-    -- Supplied 64px frames include padding; a 32px frame puts the body in one cell.
-    local size=r.ee and 1 or 32/r.w
+    -- EE/Companion retain native pixels; G9's padded cells use its 32px scale.
+    local size=r.scale
     local pose=actor.idlePose
     local facing=pose and pose.facing or actor.facing or 'down'
-    local frame=self:frame(actor)
-    local x=ox+(actor.px+8)*scale-r.w*size*scale/2
+    local frame=self:frame(actor,r,facing)
+    local x=ox+(actor.px+8)*scale-r.anchorX*size*scale
     local jumpY=J:pose(actor)
-    local y=oy+(actor.py+footY+jumpY)*scale-r.h*size*scale
+    local y=oy+(actor.py+footY+jumpY)*scale-r.anchorY*size*scale
     local water=actor.surface=='water' and not actor.follower
     local bottom=r.h
     if water and r.bottoms then bottom=r.bottoms[(rows[facing] or 0)+1][frame+1] end
@@ -145,7 +197,7 @@ return function(mod,include)
       -- The body has fully entered the ball.
     elseif oamRow or water then
       local qx=(frame*r.w);local qy=(rows[facing] or 0)*r.h
-      local cut=r.h-8/size
+      local cut=math.max(0,r.anchorY-8/size)
       local height=oamRow and math.min(cut,retained) or retained
       if oamRow=='bottom' then qy=qy+cut;y=y+cut*size*scale;height=retained-cut end
       if height>0 then
@@ -165,7 +217,7 @@ return function(mod,include)
     if pose and pose.sleep and not actor.moving and not actor.hidden and oamRow~='bottom' then
       -- Draw once above the body, including Crystal's split OAM compositor.
       local cx=ox+(actor.px+8)*scale
-      local cy=oy+(actor.py+footY-r.h*size-2)*scale
+      local cy=oy+(actor.py+footY-r.anchorY*size-2)*scale
       G.push('all')
       for z=0,2 do
         local phase=((actor.clock or 0)*.35+z/3)%1
