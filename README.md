@@ -1,3 +1,7 @@
+# WildFollowers 3.4.7 - Launcher compatibility
+
+Allow Gen1Recomp 0.3.54 and newer by removing the upper launcher-version bound. Existing mod ID, saved settings, sprites and gameplay are retained. Import `WildFollowers-v3.4.7.zip` and restart the game.
+
 # WildFollowers 3.4.6 — Companion overworld sprites
 
 Adds the walking sprites from Pokemon Companion FireRed v0.1.2 as an optional
@@ -24,7 +28,7 @@ Existing G9 and EE selections and defaults are preserved.
   caused by newer G1R sandboxes hiding the global module registry.
 
 Import `WildFollowers-v3.4.6.zip`, replacing the previous WildFollowers install,
-then restart G1R. Requires G1R >=0.3.54 and <0.4.0. The separate Pokemon Companion
+then restart G1R. Requires G1R >=0.3.54. The separate Pokemon Companion
 mod is not required. Only its artwork is imported; its following, dialogue, gifts,
 and save code are not included. See [artwork credits](COMPANION-OVERWORLD-CREDITS.md)
 and [validation](VALIDATION-3.4.6.md).
@@ -48,7 +52,7 @@ Living ecosystems are more visible at ordinary spawn amounts:
 
 Existing ecosystem toggles remain in WILDFOLLOWERS options. Turn LIVING ECOSYSTEMS OFF to restore ordinary wandering and encounter sampling. All movement still checks terrain, source-map boundaries, elevation and actor reservations; source-local roaming stays bounded. Preview and retained populations keep the existing lifecycle.
 
-Import WildFollowers-v3.3.0.zip, replacing the older WildFollowers install, and restart gen1recomp. Existing settings retain the same keys. Requires gen1recomp >=0.3.54 and <0.4.0. See VALIDATION-3.3.0.md for tested behavior and remaining visual QA.
+Import WildFollowers-v3.3.0.zip, replacing the older WildFollowers install, and restart gen1recomp. Existing settings retain the same keys. Requires gen1recomp >=0.3.54. See VALIDATION-3.3.0.md for tested behavior and remaining visual QA.
 
 ---
 
@@ -71,7 +75,7 @@ The mod does not introduce new encounter species, change levels, increase spawn 
 
 Behavior stays within the actor’s source map, land/water habitat, elevation and an eight-tile home radius. Movement uses the existing collision/reservation path. Preview populations can socialize locally; retired populations keep the existing fifteen-second retention. Menus and battles keep the existing pause/reset behavior. 1025Dex and Hoennto encounter providers are unchanged.
 
-Import WildFollowers-v3.2.0.zip, replacing the older WildFollowers install, and restart gen1recomp. The existing mod ID and saved option keys are retained. Requires gen1recomp >=0.3.54 and <0.4.0, as in the base release.
+Import WildFollowers-v3.2.0.zip, replacing the older WildFollowers install, and restart gen1recomp. The existing mod ID and saved option keys are retained. Requires gen1recomp >=0.3.54, as in the base release.
 
 See VALIDATION-3.2.0.md for test coverage and remaining gameplay checks.
 

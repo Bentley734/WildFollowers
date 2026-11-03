@@ -1,3 +1,7 @@
+## 3.4.7
+
+- Remove the upper Gen1Recomp launcher-version bound while retaining the 0.3.54 minimum and existing preferences.
+
 ## 3.4.5
 
 - Automatically use the game music when the PC audio helper is missing, stopped, stale or unavailable.

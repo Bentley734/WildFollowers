@@ -1,12 +1,12 @@
 {
   "id": "wildfollowers",
   "name": "WildFollowers",
-  "version": "3.4.6",
+  "version": "3.4.7",
   "api": 2,
   "entry": "main.lua",
   "profile": "content",
   "category": "MECHANIC",
-  "game_version": ">=0.3.54 <0.4.0",
+  "game_version": ">=0.3.54",
   "games": [
     "red",
     "blue",
